@@ -435,7 +435,7 @@ function App() {
       </div>
       
       <div className="footer-credit">
-        Made by Zewen ♡
+        Made by <a href="https://github.com/brianlzw/quantum-tic-tac-toe" target="_blank" rel="noopener noreferrer">Zewen</a> ♡
       </div>
     </div>
   );
