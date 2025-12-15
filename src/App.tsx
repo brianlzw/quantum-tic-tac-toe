@@ -212,38 +212,7 @@ function App() {
   // Check if it's a tie (game over but no winner)
   const isTie = gameState.gameOver && !gameState.winner && gameState.classical.every(sq => sq !== null);
 
-  // #region agent log
-  useEffect(() => {
-    if (gameState.emojiSelectionComplete) {
-      const appElement = document.querySelector('.app');
-      const tutorialPanel = document.querySelector('.tutorial-panel');
-      const aiAssistantPanel = document.querySelector('.ai-assistant-panel');
-      const tutorialWrapper = document.querySelector('.tutorial-wrapper');
-      const aiWrapper = document.querySelector('.ai-assistant-wrapper');
-      const appMainArea = document.querySelector('.app-main-area');
-      
-      if (appElement && appMainArea) {
-        const appRect = appElement.getBoundingClientRect();
-        const tutorialRect = tutorialPanel?.getBoundingClientRect();
-        const aiRect = aiAssistantPanel?.getBoundingClientRect();
-        const tutorialWrapperRect = tutorialWrapper?.getBoundingClientRect();
-        const aiWrapperRect = aiWrapper?.getBoundingClientRect();
-        const mainAreaRect = appMainArea.getBoundingClientRect();
-        const tutorialStyles = tutorialPanel ? window.getComputedStyle(tutorialPanel) : null;
-        const aiStyles = aiAssistantPanel ? window.getComputedStyle(aiAssistantPanel) : null;
-        const tutorialWrapperStyles = tutorialWrapper ? window.getComputedStyle(tutorialWrapper) : null;
-        const aiWrapperStyles = aiWrapper ? window.getComputedStyle(aiWrapper) : null;
-        const mainAreaStyles = window.getComputedStyle(appMainArea);
-        
-        // Calculate gaps using wrapper positions for accuracy
-        const gapToTutorial = tutorialWrapperRect ? tutorialWrapperRect.left - appRect.right : (tutorialRect ? tutorialRect.left - appRect.right : null);
-        const gapToAI = aiWrapperRect ? aiWrapperRect.left - (tutorialWrapperRect ? tutorialWrapperRect.right : appRect.right) : (aiRect ? aiRect.left - (tutorialRect ? tutorialRect.right : appRect.right) : null);
-        
-        fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:214',message:'Panel gap measurement post-fix v3',data:{appRight:appRect.right,tutorialLeft:tutorialRect?.left||null,tutorialRight:tutorialRect?.right||null,aiLeft:aiRect?.left||null,tutorialWrapperLeft:tutorialWrapperRect?.left||null,tutorialWrapperRight:tutorialWrapperRect?.right||null,aiWrapperLeft:aiWrapperRect?.left||null,aiWrapperRight:aiWrapperRect?.right||null,gapToTutorial,gapToAI,mainAreaGap:mainAreaStyles.gap,tutorialWidth:tutorialStyles?.width||'N/A',tutorialWrapperMarginRight:tutorialWrapperStyles?.marginRight||'N/A',aiWrapperMarginLeft:aiWrapperStyles?.marginLeft||'N/A',aiWidth:aiStyles?.width||'N/A',tutorialHasHidden:tutorialPanel?.classList.contains('hidden'),aiHasHidden:aiAssistantPanel?.classList.contains('hidden'),tutorialWrapperHasAiHidden:tutorialWrapper?.classList.contains('ai-hidden'),tutorialWrapperHasTutorialHidden:tutorialWrapper?.classList.contains('tutorial-hidden'),aiWrapperHasHidden:aiWrapper?.classList.contains('hidden')},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix-v3',hypothesisId:'A,B,C,D'})}).catch(()=>{});
-      }
-    }
-  }, [gameState.emojiSelectionComplete, showTutorial, showAIAssistant]);
-  // #endregion
+
 
   return (
     <div className="app-container">
@@ -435,7 +404,16 @@ function App() {
       </div>
       
       <div className="footer-credit">
-        Made by <a href="https://github.com/brianlzw/quantum-tic-tac-toe" target="_blank" rel="noopener noreferrer">Zewen</a> ♡
+        Made by{' '}
+        <a
+          href="https://github.com/brianlzw/quantum-tic-tac-toe"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="footer-link"
+        >
+          Zewen
+        </a>{' '}
+        ♡
       </div>
     </div>
   );

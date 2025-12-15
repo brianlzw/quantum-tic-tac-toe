@@ -195,58 +195,27 @@ export default function AIAssistant({ gameState, mode, onTipMove, isOpen, onTogg
 
   // Check if tip should be available (after first move, vs-bot mode, player's turn)
   useEffect(() => {
-    // #region agent log
-    console.log('[DEBUG] AIAssistant useEffect: Tip availability check', { mode, moveNumber: gameState.moveNumber, currentPlayer: gameState.currentPlayer, gameOver: gameState.gameOver, pendingCycle: !!gameState.pendingCycle, hasAppearedOnce });
-    fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAssistant.tsx:197',message:'Tip availability check started',data:{mode,moveNumber:gameState.moveNumber,currentPlayer:gameState.currentPlayer,gameOver:gameState.gameOver,pendingCycle:!!gameState.pendingCycle,hasAppearedOnce},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B,C,D'})}).catch((e)=>console.error('Log fetch failed:', e));
-    // #endregion
-    
     if (mode === 'vs-bot' && gameState.moveNumber > 1 && gameState.currentPlayer === 'X' && !gameState.gameOver && !gameState.pendingCycle) {
-      // #region agent log
-      console.log('[DEBUG] AIAssistant: All conditions met, checking random chance');
-      fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAssistant.tsx:200',message:'All conditions met, checking random chance',data:{mode,moveNumber:gameState.moveNumber,currentPlayer:gameState.currentPlayer},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch((e)=>console.error('Log fetch failed:', e));
-      // #endregion
-      
       // 70% chance tip becomes available each turn
       const randomValue = Math.random();
-      // #region agent log
-      console.log('[DEBUG] AIAssistant: Random value generated', { randomValue, willShow: randomValue < 0.7 });
-      fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAssistant.tsx:204',message:'Random value generated',data:{randomValue,willShow:randomValue < 0.7},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch((e)=>console.error('Log fetch failed:', e));
-      // #endregion
       
       if (randomValue < 0.7) {
         setTipAvailable(true);
         setHasNewTip(true);
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAssistant.tsx:207',message:'Setting tip available to true',data:{hasAppearedOnce},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D,E'})}).catch(()=>{});
-        // #endregion
         if (!hasAppearedOnce) {
           setHasAppearedOnce(true);
-          // #region agent log
-          fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAssistant.tsx:210',message:'Setting hasAppearedOnce to true',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-          // #endregion
         }
       } else {
         setTipAvailable(false);
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAssistant.tsx:214',message:'Random chance failed, tip not available',data:{randomValue},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
       }
     } else {
       setTipAvailable(false);
-      // #region agent log
-      const conditionCheck = { modeVsBot: mode === 'vs-bot', moveNumberOk: gameState.moveNumber > 1, currentPlayerX: gameState.currentPlayer === 'X', notGameOver: !gameState.gameOver, noPendingCycle: !gameState.pendingCycle };
-      console.log('[DEBUG] AIAssistant: Conditions not met', { mode, moveNumber: gameState.moveNumber, currentPlayer: gameState.currentPlayer, gameOver: gameState.gameOver, pendingCycle: !!gameState.pendingCycle, conditionCheck });
-      fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAssistant.tsx:217',message:'Conditions not met',data:{mode,moveNumber:gameState.moveNumber,currentPlayer:gameState.currentPlayer,gameOver:gameState.gameOver,pendingCycle:!!gameState.pendingCycle,conditionCheck},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,B,C'})}).catch((e)=>console.error('Log fetch failed:', e));
-      // #endregion
     }
   }, [gameState.moveNumber, gameState.currentPlayer, mode, gameState.gameOver, gameState.pendingCycle, hasAppearedOnce]);
 
   // Reset messages when game resets
   useEffect(() => {
     if (gameState.moveNumber === 1) {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAssistant.tsx:215',message:'Resetting state - game reset detected',data:{moveNumber:gameState.moveNumber,hasAppearedOnceBefore:hasAppearedOnce},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       setMessages([]);
       setTip(null);
       setHasAppearedOnce(false);
@@ -397,17 +366,8 @@ export default function AIAssistant({ gameState, mode, onTipMove, isOpen, onTogg
 
   // Don't show anything if not in vs-bot mode
   if (mode !== 'vs-bot') {
-    // #region agent log
-    console.log('[DEBUG] AIAssistant: mode !== vs-bot', { mode });
-    fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAssistant.tsx:391',message:'Component returning null - not vs-bot mode',data:{mode},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch((e)=>console.error('Log fetch failed:', e));
-    // #endregion
     return null;
   }
-
-  // #region agent log
-  console.log('[DEBUG] AIAssistant: Rendering component - checking button visibility', { hasAppearedOnce, tipAvailable, willShowButton: hasAppearedOnce || tipAvailable });
-  fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAssistant.tsx:396',message:'Rendering component - checking button visibility',data:{hasAppearedOnce,tipAvailable,willShowButton:hasAppearedOnce || tipAvailable},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E,F'})}).catch((e)=>console.error('Log fetch failed:', e));
-  // #endregion
 
   return (
     <>

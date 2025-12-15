@@ -1641,7 +1641,7 @@
 
 .footer-credit {
   position: fixed;
-  bottom: 20px;
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.75rem;
@@ -1650,5 +1650,18 @@
   text-align: center;
   pointer-events: none;
   z-index: 1;
+}
+
+.footer-credit .footer-link {
+  pointer-events: auto;
+  color: rgba(0, 0, 0, 0.6);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.footer-credit .footer-link:hover {
+  color: rgba(0, 0, 0, 0.8);
+  text-decoration: underline;
 }
 
