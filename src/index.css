@@ -24,5 +24,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow-x: hidden;
+}
+
+/* Prevent horizontal scrolling */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
 }
 

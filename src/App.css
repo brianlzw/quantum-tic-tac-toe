@@ -1,10 +1,11 @@
 .app-container {
   display: flex;
+  flex-direction: column;
   gap: 20px;
   max-width: 1600px;
   margin: 0 auto;
   padding: 20px;
-  align-items: flex-start;
+  align-items: stretch;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -109,11 +110,18 @@
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 24px;
   flex-shrink: 0;
   height: fit-content;
+}
+
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 .header h1 {
@@ -275,6 +283,8 @@
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
   position: relative;
+  min-height: 44px;
+  touch-action: manipulation;
 }
 
 .mode-button:first-child {
@@ -1663,5 +1673,381 @@
 .footer-credit .footer-link:hover {
   color: rgba(0, 0, 0, 0.8);
   text-decoration: underline;
+}
+
+/* ============================================
+   MOBILE RESPONSIVE STYLES
+   ============================================ */
+
+/* Mobile breakpoint: < 768px */
+@media (max-width: 767px) {
+  /* Reset defaults */
+  #root {
+    padding: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+    max-width: 100%;
+    margin: 0;
+    background: transparent;
+  }
+
+  body {
+    background: linear-gradient(135deg, #dbe4f0 0%, #cbd6e2 100%);
+  }
+
+  /* Mobile Layout Structure */
+  .mobile-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    position: relative;
+    padding: 16px;
+    padding-bottom: 80px; /* Space for bottom bar */
+    box-sizing: border-box;
+  }
+
+  .mobile-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mobile-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin: 0 0 20px 0;
+    text-align: left;
+  }
+
+  .mobile-content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 0;
+    width: 100%;
+  }
+
+  /* Player Display */
+  .mobile-player-display {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .mobile-player-display.bottom {
+    margin-top: auto;
+    margin-bottom: 0;
+    padding-top: 20px;
+  }
+
+  .player-display {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .player-info {
+    flex: 1;
+    padding: 12px;
+    min-height: 56px;
+    justify-content: center;
+    background: #f5f5f7;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .player-info.current {
+    background: #eef2ff;
+    border-color: #667eea;
+  }
+
+  /* Board Adjustments */
+  .board-container {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    margin: auto 0;
+  }
+
+  .board {
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    gap: 8px;
+    background: #f5f5f7;
+    border-radius: 16px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+  }
+
+  .square {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    min-height: 0;
+    font-size: 1.5rem;
+  }
+
+  /* Bottom Bar */
+  .mobile-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    pointer-events: none; /* Let clicks pass through empty areas */
+  }
+
+  .mobile-bar-left,
+  .rule-button {
+    pointer-events: auto;
+  }
+
+  .mode-selector-pill,
+  .game-actions-pill {
+    display: flex;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    gap: 4px;
+  }
+
+  .pill-button {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #666;
+    border-radius: 8px;
+    min-height: 40px;
+  }
+
+  .pill-button.active {
+    background: #ffffff;
+    color: #1d1d1f;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-weight: 600;
+  }
+
+  .rule-button {
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    color: #666;
+  }
+
+  /* Emoji Selector Specifics */
+  .emoji-selector {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding-bottom: 80px; /* Space for internal floating button */
+  }
+
+  .emoji-selection-step {
+    padding-bottom: 0;
+  }
+
+  .emoji-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    padding: 4px;
+  }
+
+  .emoji-button {
+    font-size: 1.8rem;
+    padding: 8px;
+    aspect-ratio: 1;
+    background: #f5f5f7;
+    border: 1px solid transparent;
+  }
+
+  .player-prompt {
+    font-size: 1.1rem;
+    color: #667eea;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  /* Floating Start Game Button (Internal) */
+  .start-game-section {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 40%);
+    padding: 20px;
+    padding-top: 40px;
+    display: flex;
+    justify-content: center;
+    border: none;
+    box-shadow: none;
+    border-radius: 0 0 24px 24px;
+  }
+
+  .start-game-button {
+    width: 100%;
+    background: #007AFF;
+    color: white;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  }
+
+  /* Hide Desktop Elements */
+  .app-container,
+  .left-sidebar,
+  .header,
+  .footer-credit {
+    display: none !important;
+  }
+  
+  /* Panel Overlays */
+  .tutorial-panel,
+  .ai-assistant-panel {
+    width: calc(100vw - 32px);
+    max-width: none;
+    height: calc(100dvh - 32px);
+    min-height: 0;
+    max-height: none;
+    margin: 16px;
+    border-radius: 24px;
+  }
+}
+
+/* Tablet breakpoint: 768px - 1024px */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .app-container {
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .left-sidebar {
+    width: 280px;
+  }
+
+  .board {
+    grid-template-columns: repeat(3, min(140px, 18vw));
+    grid-template-rows: repeat(3, min(140px, 18vw));
+  }
+
+  .app {
+    padding: 24px;
+    height: auto;
+    min-height: 600px;
+  }
+
+  .tutorial-panel,
+  .ai-assistant-panel {
+    width: 300px;
+    max-width: 300px;
+    height: 600px;
+    min-height: 600px;
+    max-height: 600px;
+  }
+}
+
+/* Prevent horizontal scrolling on all devices */
+@media (max-width: 1024px) {
+  body {
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  .app-container,
+  .app-main-area,
+  .board-container,
+  .board {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Optimize scrolling performance */
+  .tutorial-panel-content,
+  .ai-assistant-messages,
+  .emoji-selection-step {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+}
+
+/* Mobile viewport height fixes */
+@media (max-width: 767px) {
+  /* Use viewport height units for better mobile support */
+  html {
+    height: -webkit-fill-available;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  #root {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* Prevent address bar from affecting layout */
+  .app-container {
+    min-height: calc(100vh - 20px);
+    min-height: calc(100dvh - 20px);
+  }
+}
+
+/* Touch-friendly improvements for all touch devices */
+@media (hover: none) and (pointer: coarse) {
+  /* Ensure all interactive elements have proper touch targets */
+  button,
+  .square,
+  .emoji-button,
+  .endpoint-button-inline,
+  .mode-button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0, 122, 255, 0.2);
+  }
+
+  /* Ensure minimum touch target size for all buttons */
+  button:not(.spooky-mark):not(.classical-mark) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Remove hover effects on touch devices */
+  .square.available:hover {
+    background: rgba(255, 255, 255, 0.95);
+    transform: none;
+  }
+
+  /* Add active states for touch feedback */
+  .square.available:active {
+    background: rgba(0, 122, 255, 0.08);
+    transform: scale(0.98);
+  }
+
+  .endpoint-button-inline:active {
+    transform: scale(0.98);
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
 }
 
