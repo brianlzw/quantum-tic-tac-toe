@@ -17,6 +17,7 @@ interface SquareProps {
   onClick: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  onTouchStart?: (e: React.TouchEvent) => void;
   onSpookyMarkHover?: (moveId: string | null) => void;
 }
 
@@ -31,6 +32,7 @@ export default function Square({
   onClick,
   onMouseEnter,
   onMouseLeave,
+  onTouchStart,
   onSpookyMarkHover,
 }: SquareProps) {
   const classical = gameState.classical[square];
@@ -56,6 +58,7 @@ export default function Square({
       onClick={isClickable ? onClick : undefined}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onTouchStart={onTouchStart}
       style={{
         gridRow: row + 1,
         gridColumn: col + 1,
@@ -77,6 +80,17 @@ export default function Square({
                 className={`spooky-mark ${getMarkPreviewClass(move.id)} ${isHovered ? 'hovered-entanglement' : ''}`}
                 onMouseEnter={onSpookyMarkHover ? () => onSpookyMarkHover(move.id) : undefined}
                 onMouseLeave={onSpookyMarkHover ? () => onSpookyMarkHover(null) : undefined}
+                onTouchStart={(e) => {
+                  if (onSpookyMarkHover) {
+                    e.stopPropagation();
+                    const moveId = move.id;
+                    onSpookyMarkHover(moveId);
+                    // Clear highlight after delay
+                    setTimeout(() => {
+                      onSpookyMarkHover?.(null);
+                    }, 2000);
+                  }
+                }}
                 style={{ cursor: onSpookyMarkHover ? 'pointer' : 'default' }}
               >
                 {gameState.emojis ? gameState.emojis[move.player] : move.player}

@@ -20,6 +20,19 @@ export default function CycleResolutionPrompt({
     onHoverEndpoint?.(endpoint);
   };
 
+  const handleTouchStart = (endpoint: SquareId) => {
+    setHoveredEndpoint(endpoint);
+    onHoverEndpoint?.(endpoint);
+  };
+
+  const handleTouchEnd = () => {
+    // Keep preview visible for a moment after touch ends
+    setTimeout(() => {
+      setHoveredEndpoint(null);
+      onHoverEndpoint?.(null);
+    }, 500);
+  };
+
   if (!gameState.pendingCycle) return null;
 
   const lastMove = gameState.moves.find(m => m.id === gameState.pendingCycle!.cycleMoveId);
@@ -40,6 +53,8 @@ export default function CycleResolutionPrompt({
               onClick={() => onResolve(endpoint)}
               onMouseEnter={() => handleHover(endpoint)}
               onMouseLeave={() => handleHover(null)}
+              onTouchStart={() => handleTouchStart(endpoint)}
+              onTouchEnd={handleTouchEnd}
             >
               <div className="endpoint-grid-preview">
                 <GridPreview highlightedSquare={endpoint} size={50} />

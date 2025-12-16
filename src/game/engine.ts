@@ -118,6 +118,9 @@ export function resolveCycle(
   state: GameState,
   chosenEndpoint: SquareId
 ): GameState {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'engine.ts:117',message:'resolveCycle entry',data:{hasPendingCycle:!!state.pendingCycle,cycleMoveId:state.pendingCycle?.cycleMoveId,chosenEndpoint,uncollapsedMovesCount:state.moves.filter(m=>m.collapsedTo===undefined).length,collapsedMovesCount:state.moves.filter(m=>m.collapsedTo!==undefined).length,classicalMarksCount:state.classical.filter(m=>m!==null).length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+  // #endregion
   if (!state.pendingCycle) {
     return state;
   }
@@ -132,12 +135,49 @@ export function resolveCycle(
   }
 
   const uncollapsedMoves = getUncollapsedMoves(state.moves);
-  const collapseMap = collapseCycle(lastMove, chosenEndpoint, uncollapsedMoves);
-  const { updatedMoves, newClassical: newClassicalMarks } = applyCollapse(state.moves, collapseMap);
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'engine.ts:134',message:'Before collapseCycle call',data:{uncollapsedMovesCount:uncollapsedMoves.length,lastMoveId:lastMove.id,lastMoveA:lastMove.a,lastMoveB:lastMove.b,chosenEndpoint},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+  // #endregion
+  let collapseMap: Map<string, SquareId>;
+  try {
+    collapseMap = collapseCycle(lastMove, chosenEndpoint, uncollapsedMoves);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'engine.ts:137',message:'After collapseCycle call',data:{collapseMapSize:collapseMap.size},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+  } catch (error) {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'engine.ts:140',message:'Error in collapseCycle',data:{error:String(error),errorMessage:error instanceof Error?error.message:'unknown'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+    throw error;
+  }
+  let updatedMoves: typeof state.moves;
+  let newClassicalMarks: Map<SquareId, typeof state.classical[0]>;
+  try {
+    const result = applyCollapse(state.moves, collapseMap);
+    updatedMoves = result.updatedMoves;
+    newClassicalMarks = result.newClassical;
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'engine.ts:150',message:'After applyCollapse call',data:{newClassicalMarksSize:newClassicalMarks.size,updatedMovesCount:updatedMoves.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+  } catch (error) {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'engine.ts:154',message:'Error in applyCollapse',data:{error:String(error),errorMessage:error instanceof Error?error.message:'unknown'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+    throw error;
+  }
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'engine.ts:136',message:'After applyCollapse call',data:{newClassicalMarksSize:newClassicalMarks.size,updatedMovesCount:updatedMoves.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+  // #endregion
 
   // Apply new classical marks to the classical array
   const updatedClassical = [...state.classical];
   for (const [square, mark] of newClassicalMarks.entries()) {
+    // #region agent log
+    const existingMark = updatedClassical[square];
+    if (existingMark !== null) {
+      fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'engine.ts:140',message:'Overwriting existing classical mark',data:{square,existingMark,newMark:mark},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+    }
+    // #endregion
     updatedClassical[square] = mark;
   }
 
