@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { GameState, GameMode, SquareId } from '../game/types';
 import CycleResolutionPrompt from './CycleResolutionPrompt';
 
@@ -10,6 +11,9 @@ interface GameControlsProps {
 }
 
 export default function GameControls({ gameState, mode, onNewGame, onCycleResolution, onHoverCycleEndpoint }: GameControlsProps) {
+  const [isMinimizedX, setIsMinimizedX] = useState(false);
+  const [isMinimizedO, setIsMinimizedO] = useState(false);
+  
   const xEmoji = gameState.emojis ? gameState.emojis.X : 'X';
   const oEmoji = gameState.emojis ? gameState.emojis.O : 'O';
   const chooserEmoji = gameState.pendingCycle && gameState.emojis 
@@ -29,15 +33,48 @@ export default function GameControls({ gameState, mode, onNewGame, onCycleResolu
                   {gameState.currentPlayer === 'X' && <span className="current-indicator">Current</span>}
                 </div>
                 {gameState.pendingCycle && gameState.pendingCycle.chooser === 'X' && onCycleResolution && (
-                  <div className="cycle-prompt-inline">
-                    <p className="cycle-prompt-text">
-                      Click options to preview the collapsed cycle
-                    </p>
-                    <CycleResolutionPrompt
-                      gameState={gameState}
-                      onResolve={onCycleResolution}
-                      onHoverEndpoint={onHoverCycleEndpoint}
-                    />
+                  <div className={`cycle-prompt-inline ${isMinimizedX ? 'minimized' : ''}`}>
+                    <div 
+                      className="cycle-prompt-header"
+                      onClick={() => setIsMinimizedX(!isMinimizedX)}
+                    >
+                      <p className="cycle-prompt-text">
+                        <span className="cycle-prompt-text-desktop">Click options to preview the collapsed cycle</span>
+                        <span className="cycle-prompt-text-mobile">Tap to preview</span>
+                      </p>
+                      <button 
+                        className="cycle-prompt-caret" 
+                        aria-label="Toggle preview"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsMinimizedX(!isMinimizedX);
+                        }}
+                      >
+                        <svg 
+                          width="12" 
+                          height="12" 
+                          viewBox="0 0 12 12" 
+                          fill="none" 
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={isMinimizedX ? 'caret-up' : 'caret-down'}
+                        >
+                          <path 
+                            d="M2 4L6 8L10 4" 
+                            stroke="rgba(148, 86, 0, 1)" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    <div className={`cycle-prompt-content ${isMinimizedX ? 'minimized' : ''}`}>
+                      <CycleResolutionPrompt
+                        gameState={gameState}
+                        onResolve={onCycleResolution}
+                        onHoverEndpoint={onHoverCycleEndpoint}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -48,15 +85,48 @@ export default function GameControls({ gameState, mode, onNewGame, onCycleResolu
                   {gameState.currentPlayer === 'O' && <span className="current-indicator">Current</span>}
                 </div>
                 {gameState.pendingCycle && gameState.pendingCycle.chooser === 'O' && onCycleResolution && (
-                  <div className="cycle-prompt-inline">
-                    <p className="cycle-prompt-text">
-                      Click options to preview the collapsed cycle
-                    </p>
-                    <CycleResolutionPrompt
-                      gameState={gameState}
-                      onResolve={onCycleResolution}
-                      onHoverEndpoint={onHoverCycleEndpoint}
-                    />
+                  <div className={`cycle-prompt-inline ${isMinimizedO ? 'minimized' : ''}`}>
+                    <div 
+                      className="cycle-prompt-header"
+                      onClick={() => setIsMinimizedO(!isMinimizedO)}
+                    >
+                      <p className="cycle-prompt-text">
+                        <span className="cycle-prompt-text-desktop">Click options to preview the collapsed cycle</span>
+                        <span className="cycle-prompt-text-mobile">Tap to preview</span>
+                      </p>
+                      <button 
+                        className="cycle-prompt-caret" 
+                        aria-label="Toggle preview"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsMinimizedO(!isMinimizedO);
+                        }}
+                      >
+                        <svg 
+                          width="12" 
+                          height="12" 
+                          viewBox="0 0 12 12" 
+                          fill="none" 
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={isMinimizedO ? 'caret-up' : 'caret-down'}
+                        >
+                          <path 
+                            d="M2 4L6 8L10 4" 
+                            stroke="rgba(148, 86, 0, 1)" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    <div className={`cycle-prompt-content ${isMinimizedO ? 'minimized' : ''}`}>
+                      <CycleResolutionPrompt
+                        gameState={gameState}
+                        onResolve={onCycleResolution}
+                        onHoverEndpoint={onHoverCycleEndpoint}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -70,15 +140,48 @@ export default function GameControls({ gameState, mode, onNewGame, onCycleResolu
                   {gameState.currentPlayer === 'X' && <span className="current-indicator">Current</span>}
                 </div>
                 {gameState.pendingCycle && gameState.pendingCycle.chooser === 'X' && onCycleResolution && (
-                  <div className="cycle-prompt-inline">
-                    <p className="cycle-prompt-text">
-                      Click options to preview the collapsed cycle
-                    </p>
-                    <CycleResolutionPrompt
-                      gameState={gameState}
-                      onResolve={onCycleResolution}
-                      onHoverEndpoint={onHoverCycleEndpoint}
-                    />
+                  <div className={`cycle-prompt-inline ${isMinimizedX ? 'minimized' : ''}`}>
+                    <div 
+                      className="cycle-prompt-header"
+                      onClick={() => setIsMinimizedX(!isMinimizedX)}
+                    >
+                      <p className="cycle-prompt-text">
+                        <span className="cycle-prompt-text-desktop">Click options to preview the collapsed cycle</span>
+                        <span className="cycle-prompt-text-mobile">Tap to preview</span>
+                      </p>
+                      <button 
+                        className="cycle-prompt-caret" 
+                        aria-label="Toggle preview"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsMinimizedX(!isMinimizedX);
+                        }}
+                      >
+                        <svg 
+                          width="12" 
+                          height="12" 
+                          viewBox="0 0 12 12" 
+                          fill="none" 
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={isMinimizedX ? 'caret-up' : 'caret-down'}
+                        >
+                          <path 
+                            d="M2 4L6 8L10 4" 
+                            stroke="rgba(148, 86, 0, 1)" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    <div className={`cycle-prompt-content ${isMinimizedX ? 'minimized' : ''}`}>
+                      <CycleResolutionPrompt
+                        gameState={gameState}
+                        onResolve={onCycleResolution}
+                        onHoverEndpoint={onHoverCycleEndpoint}
+                      />
+                    </div>
                   </div>
                 )}
               </div>

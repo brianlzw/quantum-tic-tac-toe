@@ -672,12 +672,18 @@
 
 @media (max-width: 767px) {
   .spooky-mark.hovered-entanglement {
-    background: rgba(102, 126, 234, 0.25) !important;
-    border-color: rgba(102, 126, 234, 0.8) !important;
-    border-width: 2px !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+    border-color: transparent !important;
+    border-width: 1px !important;
     transform: none !important;
-    z-index: 10 !important;
+    z-index: auto !important;
     box-shadow: none !important;
+  }
+
+  .entanglement-line-hovered {
+    stroke: transparent !important;
+    stroke-width: 0 !important;
+    animation: none !important;
   }
 }
 
@@ -756,9 +762,65 @@
     letter-spacing: 0.02em;
   }
 
+  .cycle-prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+
+  .cycle-prompt-text-mobile {
+    display: none;
+  }
+
+  .cycle-prompt-text-desktop {
+    display: inline;
+  }
+
+  .cycle-prompt-caret {
+    display: none;
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+
+  .cycle-prompt-caret svg {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cycle-prompt-caret svg.caret-down {
+    transform: rotate(0deg);
+  }
+
+  .cycle-prompt-caret svg.caret-up {
+    transform: rotate(180deg);
+  }
+
   @media (max-width: 767px) {
     .cycle-prompt-text {
       font-size: 11px !important;
+      margin: 0 !important;
+    }
+
+    .cycle-prompt-header {
+      margin-bottom: 0 !important;
+    }
+
+    .cycle-prompt-text-mobile {
+      display: inline !important;
+      font-size: 10px !important;
+    }
+
+    .cycle-prompt-text-desktop {
+      display: none !important;
+    }
+
+    .cycle-prompt-caret {
+      display: block !important;
     }
 
     .player-number-mobile {
@@ -2034,7 +2096,7 @@
 
   .mobile-player-display.top {
     margin-top: 0;
-    margin-bottom: 16px;
+    margin-bottom: 0 !important;
     padding-bottom: 0;
     order: 1;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -2064,20 +2126,38 @@
     min-width: 0;
     max-width: 100%;
     box-sizing: border-box;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), margin 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), align-items 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                margin 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                align-items 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    gap: 12px;
   }
 
   .player-display {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                gap 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   /* Show both players - reverted hiding behavior */
 
   /* Reserve space for cycle prompt to prevent layout shift */
   .player-info.has-cycle-prompt {
-    min-height: 200px !important;
+    min-height: auto !important;
     align-items: flex-start !important;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1), align-items 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    gap: 0 !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                align-items 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   /* Ensure cycle prompt doesn't cause layout shift in mobile player display */
@@ -2086,7 +2166,8 @@
   }
 
   .mobile-player-display.bottom .player-info.has-cycle-prompt {
-    min-height: 200px !important;
+    min-height: auto !important;
+    gap: 0 !important;
   }
 
   .player-info.current {
@@ -2155,12 +2236,51 @@
 
   /* Cycle prompt mobile layout fixes */
   .cycle-prompt-inline {
-    margin-top: 8px !important;
+    margin-top: 0 !important;
     margin-bottom: 0 !important;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     transform-origin: top !important;
     overflow: hidden !important;
-    max-height: 500px !important;
+    padding: 8px 12px !important;
+  }
+
+  .cycle-prompt-inline.minimized {
+    padding-bottom: 8px !important;
+  }
+
+  .cycle-prompt-inline .cycle-prompt-header {
+    margin-bottom: 0 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cycle-prompt-content {
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                margin-top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    max-height: 1000px;
+    opacity: 1;
+    margin-top: 8px;
+    transform: translateY(0) scaleY(1);
+    transform-origin: top;
+  }
+
+  .cycle-prompt-content.minimized {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    transform: translateY(-8px) scaleY(0.95);
+    overflow: hidden;
+  }
+
+  .cycle-prompt-inline > *:not(.cycle-prompt-header) {
+    margin-top: 8px !important;
   }
 
   .cycle-prompt-inline:empty {
@@ -2301,7 +2421,8 @@
   }
 
   .mode-selector-pill .pill-button {
-    flex: 1;
+    flex: 0 0 auto;
+    width: auto;
     padding: 8px 16px;
     border: none;
     background: transparent;
