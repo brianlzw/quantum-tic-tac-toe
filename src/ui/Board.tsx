@@ -293,21 +293,26 @@ export default function Board({
           {squares.map(square => {
             const isCycleEndpoint = cycleEndpoints.includes(square);
             const isHoveredEndpoint = hoveredCycleEndpoint === square;
+            const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
             
             const handleSquareMouseEnter = () => {
-              if (isCycleEndpoint) {
+              if (isCycleEndpoint && !isMobile) {
                 onHoverCycleEndpoint(square);
               }
             };
 
             const handleSquareMouseLeave = () => {
-              if (isCycleEndpoint) {
+              if (isCycleEndpoint && !isMobile) {
                 onHoverCycleEndpoint(null);
               }
             };
 
-            // Touch handler for cycle endpoint preview
+            // Touch handler for cycle endpoint preview - disabled on mobile
             const handleSquareTouchStart = (e: React.TouchEvent) => {
+              // Disable hover preview on mobile - only allow direct clicks
+              if (isMobile) {
+                return;
+              }
               if (isCycleEndpoint && gameState.pendingCycle) {
                 e.preventDefault();
                 // If already previewing this endpoint, the click handler will confirm it

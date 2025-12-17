@@ -566,6 +566,16 @@
   z-index: 10;
 }
 
+@media (max-width: 767px) {
+  .square.hovered-endpoint {
+    background: inherit !important;
+    border-color: inherit !important;
+    border-width: inherit !important;
+    transform: none !important;
+    z-index: auto !important;
+  }
+}
+
 @keyframes pulse {
   0%, 100% {
     box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7);
@@ -812,7 +822,7 @@
 
     .cycle-prompt-text-mobile {
       display: inline !important;
-      font-size: 10px !important;
+      font-size: 12px !important;
     }
 
     .cycle-prompt-text-desktop {
@@ -2243,11 +2253,14 @@
                 height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     transform-origin: top !important;
     overflow: hidden !important;
-    padding: 4px !important;
+    padding: 8px 4px !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
   }
 
   .cycle-prompt-inline.minimized {
-    padding: 4px !important;
+    padding: 8px 4px !important;
   }
 
   .cycle-prompt-inline .cycle-prompt-header {
