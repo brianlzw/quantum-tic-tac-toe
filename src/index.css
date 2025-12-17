@@ -25,6 +25,19 @@ body {
   align-items: center;
   justify-content: center;
   overflow-x: hidden;
+  position: relative;
+}
+
+#root.ai-assistant-open {
+  justify-content: flex-start;
+}
+
+@media (max-width: 767px) {
+  #root {
+    padding-left: 16px;
+    padding-right: 16px;
+    position: relative;
+  }
 }
 
 /* Prevent horizontal scrolling */

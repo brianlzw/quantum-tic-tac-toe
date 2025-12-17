@@ -12,6 +12,51 @@ import { makeBotMove, makeBotCycleChoice } from './bot/bot';
 import { soundManager } from './utils/sounds';
 import './App.css';
 
+// Mobile AI Tips Button Component
+function AITipsButton({ gameState, mode, onClick }: { gameState: GameState; mode: GameMode; onClick: () => void }) {
+  const [hasNewTip, setHasNewTip] = useState(false);
+  const [hasAppearedOnce, setHasAppearedOnce] = useState(false);
+  const [tipAvailable, setTipAvailable] = useState(false);
+
+  useEffect(() => {
+    if (mode === 'vs-bot' && gameState.moveNumber > 1 && gameState.currentPlayer === 'X' && !gameState.gameOver && !gameState.pendingCycle) {
+      const randomValue = Math.random();
+      if (randomValue < 0.7) {
+        setTipAvailable(true);
+        setHasNewTip(true);
+        if (!hasAppearedOnce) {
+          setHasAppearedOnce(true);
+        }
+      } else {
+        setTipAvailable(false);
+      }
+    } else {
+      setTipAvailable(false);
+    }
+  }, [gameState.moveNumber, gameState.currentPlayer, mode, gameState.gameOver, gameState.pendingCycle, hasAppearedOnce]);
+
+  useEffect(() => {
+    if (gameState.moveNumber === 1) {
+      setHasAppearedOnce(false);
+      setHasNewTip(false);
+    }
+  }, [gameState.moveNumber]);
+
+  if (!hasAppearedOnce && !tipAvailable) return null;
+
+  return (
+    <button 
+      className={`tip-button mobile-tip-button ${hasNewTip ? 'has-new-tip' : ''}`}
+      onClick={onClick}
+      title={hasNewTip ? "New tip available! Click for AI assistance" : "Open AI Tips"}
+    >
+      <span className="tip-button-icon">🪄</span>
+      <span className="tip-button-text">AI Tips</span>
+      {hasNewTip && <span className="tip-button-badge">!</span>}
+    </button>
+  );
+}
+
 type GameAction =
   | { type: 'MAKE_MOVE'; a: SquareId; b: SquareId }
   | { type: 'RESOLVE_CYCLE'; endpoint: SquareId }
@@ -79,6 +124,36 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
 function App() {
   const [gameState, dispatch] = useReducer(gameReducer, createGameState());
+  
+  // #region agent log
+  useEffect(() => {
+    if (gameState.pendingCycle) {
+      const logCyclePromptLayout = () => {
+        const playerDisplay = document.querySelector('.mobile-player-display.bottom');
+        const playerInfo = document.querySelector('.player-info.has-cycle-prompt');
+        const mobileContentArea = document.querySelector('.mobile-content-area');
+        const mobileCard = document.querySelector('.mobile-card');
+        if (playerDisplay && mobileContentArea && mobileCard) {
+          const displayRect = playerDisplay.getBoundingClientRect();
+          const displayStyle = window.getComputedStyle(playerDisplay);
+          const infoRect = playerInfo?.getBoundingClientRect();
+          const infoStyle = playerInfo ? window.getComputedStyle(playerInfo as HTMLElement) : null;
+          const contentRect = mobileContentArea.getBoundingClientRect();
+          const cardRect = mobileCard.getBoundingClientRect();
+          const cyclePrompt = playerDisplay.querySelector('.cycle-prompt-inline');
+          const cyclePromptRect = cyclePrompt?.getBoundingClientRect();
+          fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:useEffect',message:'Cycle prompt layout',data:{playerDisplay:{width:displayRect.width,height:displayRect.height,top:displayRect.top,bottom:displayRect.bottom,minHeight:displayStyle.minHeight},playerInfo:{width:infoRect?.width,height:infoRect?.height,minHeight:infoStyle?.minHeight,hasCyclePrompt:!!playerInfo},cyclePrompt:{width:cyclePromptRect?.width,height:cyclePromptRect?.height},mobileContentArea:{width:contentRect.width,height:contentRect.height,top:contentRect.top,bottom:contentRect.bottom},mobileCard:{width:cardRect.width,height:cardRect.height},hasPendingCycle:!!gameState.pendingCycle},timestamp:Date.now(),sessionId:'debug-session',runId:'run4',hypothesisId:'F'})}).catch(()=>{});
+        }
+      };
+      const timer = setTimeout(logCyclePromptLayout, 100);
+      window.addEventListener('resize', logCyclePromptLayout);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('resize', logCyclePromptLayout);
+      };
+    }
+  }, [gameState.pendingCycle]);
+  // #endregion
   const [mode, setMode] = useState<GameMode>('two-player');
   const [selectedSquare, setSelectedSquare] = useState<SquareId | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -91,6 +166,16 @@ function App() {
   const resolvingCycleMoveIdRef = useRef<string | null>(null);
   const isResolvingCycleRef = useRef<string | null>(null); // Track which cycle is being resolved
   const [isMobile, setIsMobile] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+
+  // Hide splash screen after 1-3 seconds
+  useEffect(() => {
+    const splashDuration = 2000; // 2 seconds
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, splashDuration);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Mobile breakpoint detection for DOM placement (only move sidebar in the DOM on <768px)
   useEffect(() => {
@@ -283,6 +368,34 @@ function App() {
   // Check if it's a tie (game over but no winner)
   const isTie = gameState.gameOver && !gameState.winner && gameState.classical.every(sq => sq !== null);
 
+  // #region agent log
+  useEffect(() => {
+    if (!isMobile) return;
+    const logMobileLayout = () => {
+      const title = document.querySelector('.mobile-title');
+      const playerDisplay = document.querySelector('.mobile-player-display');
+      const mobileCard = document.querySelector('.mobile-card');
+      if (title && playerDisplay && mobileCard) {
+        const titleRect = title.getBoundingClientRect();
+        const playerRect = playerDisplay.getBoundingClientRect();
+        const cardRect = mobileCard.getBoundingClientRect();
+        const titleStyle = window.getComputedStyle(title);
+        const playerStyle = window.getComputedStyle(playerDisplay);
+        const cardStyle = window.getComputedStyle(mobileCard);
+        const titleOffsetFromCard = titleRect.top - cardRect.top;
+        const playerOffsetFromCard = playerRect.top - cardRect.top;
+        fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:useEffect',message:'Mobile layout order check POST-FIX',data:{title:{top:titleRect.top,left:titleRect.left,width:titleRect.width,height:titleRect.height,order:titleStyle.order,offsetFromCardTop:titleOffsetFromCard},playerDisplay:{top:playerRect.top,left:playerRect.left,width:playerRect.width,height:playerRect.height,order:playerStyle.order,hasTopClass:playerDisplay.classList.contains('top'),offsetFromCardTop:playerOffsetFromCard},mobileCard:{top:cardRect.top,left:cardRect.left,width:cardRect.width,height:cardRect.height,display:cardStyle.display,flexDirection:cardStyle.flexDirection},emojiSelectionComplete:gameState.emojiSelectionComplete,titleIsFirst:titleOffsetFromCard < playerOffsetFromCard},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
+      }
+    };
+    const timer = setTimeout(logMobileLayout, 100);
+    window.addEventListener('resize', logMobileLayout);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', logMobileLayout);
+    };
+  }, [isMobile, gameState.emojiSelectionComplete]);
+  // #endregion
+
   const renderMobileLayout = () => {
     const showGameControls = !gameState.emojiSelectionComplete;
     
@@ -342,7 +455,23 @@ function App() {
             </>
           ) : (
             <>
+              {/* Player Display for Game - moved above board */}
+              <div className="mobile-player-display top">
+                <GameControls
+                  gameState={gameState}
+                  mode={mode}
+                  onNewGame={handleNewGame}
+                  onCycleResolution={cycleResolutionHandler || handleCycleResolution}
+                  onHoverCycleEndpoint={setHoveredCycleEndpoint}
+                />
+              </div>
+
               <div className="mobile-content-area">
+                {gameState.pendingCycle && (
+                  <div className="cycle-collapse-hint">
+                    Click on one of the highlighted squares to collapse the cycle
+                  </div>
+                )}
                 <Board
                   gameState={gameState}
                   selectedSquare={selectedSquare}
@@ -351,17 +480,6 @@ function App() {
                   hoveredCycleEndpoint={hoveredCycleEndpoint}
                   onHoverCycleEndpoint={setHoveredCycleEndpoint}
                   onCycleResolutionHandlerReady={setCycleResolutionHandler}
-                />
-              </div>
-
-              {/* Player Display for Game */}
-              <div className="mobile-player-display bottom">
-                <GameControls
-                  gameState={gameState}
-                  mode={mode}
-                  onNewGame={handleNewGame}
-                  onCycleResolution={cycleResolutionHandler || handleCycleResolution}
-                  onHoverCycleEndpoint={setHoveredCycleEndpoint}
                 />
               </div>
             </>
@@ -397,15 +515,27 @@ function App() {
               </div>
             )}
           </div>
-          <button 
-            className="pill-button rule-button"
-            onClick={() => {
-              if (showAIAssistant) setShowAIAssistant(false);
-              setShowTutorial(!showTutorial);
-            }}
-          >
-            Game rule
-          </button>
+          <div className="mobile-bar-right">
+            {gameState.emojiSelectionComplete && mode === 'vs-bot' && (
+              <AITipsButton
+                gameState={gameState}
+                mode={mode}
+                onClick={() => {
+                  if (showTutorial) setShowTutorial(false);
+                  setShowAIAssistant(!showAIAssistant);
+                }}
+              />
+            )}
+            <button 
+              className="pill-button rule-button"
+              onClick={() => {
+                if (showAIAssistant) setShowAIAssistant(false);
+                setShowTutorial(!showTutorial);
+              }}
+            >
+              Game rule
+            </button>
+          </div>
         </div>
 
         {/* Overlays */}
@@ -417,6 +547,14 @@ function App() {
           onClick={(e) => {
             if (showTutorial && (e.target as HTMLElement).classList.contains('tutorial-wrapper')) {
               setShowTutorial(false);
+            }
+          }}
+          ref={(el) => {
+            if (el) {
+              // #region agent log
+              const rect = el.getBoundingClientRect();
+              const style = window.getComputedStyle(el);
+              fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:tutorial-wrapper',message:'Tutorial wrapper layout',data:{width:rect.width,height:rect.height,top:rect.top,left:rect.left,position:style.position,zIndex:style.zIndex,display:style.display,opacity:style.opacity,pointerEvents:style.pointerEvents,hasTutorialHidden:el.classList.contains('tutorial-hidden'),showTutorial},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
             }
           }}
         >
@@ -670,7 +808,45 @@ function App() {
     </div>
   );
 
-  return isMobile ? renderMobileLayout() : renderDesktopLayout();
+  // Add class to root when AI assistant is open
+  useEffect(() => {
+    const root = document.getElementById('root');
+    if (root) {
+      if (showAIAssistant) {
+        root.classList.add('ai-assistant-open');
+      } else {
+        root.classList.remove('ai-assistant-open');
+      }
+    }
+    return () => {
+      if (root) {
+        root.classList.remove('ai-assistant-open');
+      }
+    };
+  }, [showAIAssistant]);
+
+  return (
+    <>
+      {showSplash && (
+        <div className={`splash-screen ${isMobile ? 'splash-screen-mobile' : ''}`}>
+          <h1 className="splash-title">Quantum Tic-Tac-Toe</h1>
+          <div className="splash-credit">
+            Made by{' '}
+            <a
+              href="https://github.com/brianlzw/quantum-tic-tac-toe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="splash-link"
+            >
+              Zewen
+            </a>{' '}
+            ♡
+          </div>
+        </div>
+      )}
+      {isMobile ? renderMobileLayout() : renderDesktopLayout()}
+    </>
+  );
 }
 
 export default App;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { GameState, SquareId } from '../game/types';
 import type { Tip } from '../bot/tip';
 import { getPlayerTip } from '../bot/tip';
@@ -237,16 +237,100 @@ export default function AIAssistant({ gameState, mode, onTipMove, isOpen, onTogg
     }
   }, [isOpen]);
 
-  // Add greeting when first opened
+  // Add greeting when first opened (but only if no tip was just requested)
+  const [justRequestedTip, setJustRequestedTip] = useState(false);
+  const [hasAutoRequestedTip, setHasAutoRequestedTip] = useState(false);
+  
+  // Auto-request tip when panel opens for the first time (if tip is available)
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
+    if (isOpen && !hasAutoRequestedTip && (tipAvailable || hasAppearedOnce)) {
+      setHasAutoRequestedTip(true);
+      // Small delay to ensure panel is fully open
+      const timer = setTimeout(async () => {
+        if (!tipAvailable && !hasAppearedOnce) {
+          // If no tip available but panel is open, show a greeting
+          if (messages.length === 0) {
+            const greeting = personality.greetings[Math.floor(Math.random() * personality.greetings.length)];
+            setMessages([{ role: 'assistant', content: greeting, timestamp: Date.now() }]);
+          }
+          return;
+        }
+
+        setJustRequestedTip(true);
+        setMessages([]);
+        setIsThinking(true);
+        setHasNewTip(false);
+
+        // Simulate thinking delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        const newTip = getPlayerTip(gameState);
+        setTip(newTip);
+        setIsThinking(false);
+        setTipAvailable(false);
+
+        if (newTip) {
+          const tipPhrase = personality.tipPhrases[Math.floor(Math.random() * personality.tipPhrases.length)];
+          const closingPhrase = personality.closingPhrases[Math.floor(Math.random() * personality.closingPhrases.length)];
+          
+          // Convert square numbers to user-friendly positions
+          const squareNames = ['top-left', 'top-center', 'top-right', 'middle-left', 'center', 'middle-right', 'bottom-left', 'bottom-center', 'bottom-right'];
+          const moveDesc = `${squareNames[newTip.move.a]} and ${squareNames[newTip.move.b]}`;
+          
+          const tipMessage = `${tipPhrase}\n\nSuggested Move: Play between ${moveDesc}\n\nWhy? ${newTip.explanation}\n\n${newTip.reasoning}\n\n${closingPhrase}`;
+          
+          setMessages([{
+            role: 'assistant',
+            content: tipMessage,
+            timestamp: Date.now(),
+            tip: newTip,
+            visual: {
+              type: 'board',
+              highlightedSquares: [newTip.move.a, newTip.move.b],
+            },
+          }]);
+        } else {
+          setMessages([{
+            role: 'assistant',
+            content: "Hmm, I'm having trouble finding an optimal move right now. The board is quite complex! Try to think about controlling key squares and blocking your opponent.",
+            timestamp: Date.now(),
+          }]);
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, tipAvailable, hasAppearedOnce, hasAutoRequestedTip]);
+  
+  // Reset auto-request flag when panel closes
+  useEffect(() => {
+    if (!isOpen) {
+      setHasAutoRequestedTip(false);
+    }
+  }, [isOpen]);
+  
+  useEffect(() => {
+    if (isOpen && messages.length === 0 && !justRequestedTip && !hasAutoRequestedTip) {
       const greeting = personality.greetings[Math.floor(Math.random() * personality.greetings.length)];
       setMessages([{ role: 'assistant', content: greeting, timestamp: Date.now() }]);
     }
-  }, [isOpen, personality, messages.length]);
+    if (justRequestedTip) {
+      setJustRequestedTip(false);
+    }
+  }, [isOpen, personality, messages.length, justRequestedTip, hasAutoRequestedTip]);
 
   const handleRequestTip = async () => {
-    if (!tipAvailable && !hasAppearedOnce) return;
+    if (!tipAvailable && !hasAppearedOnce) {
+      // If no tip available but panel is open, show a message
+      if (isOpen && messages.length === 0) {
+        const greeting = personality.greetings[Math.floor(Math.random() * personality.greetings.length)];
+        setMessages([{ role: 'assistant', content: greeting, timestamp: Date.now() }]);
+      }
+      return;
+    }
+
+    // Mark that we're requesting a tip to prevent greeting from showing
+    setJustRequestedTip(true);
 
     // Open the panel if not already open
     if (!isOpen) {
@@ -254,6 +338,9 @@ export default function AIAssistant({ gameState, mode, onTipMove, isOpen, onTogg
       // Wait a bit for the panel to open
       await new Promise(resolve => setTimeout(resolve, 300));
     }
+
+    // Clear any existing messages to show tip immediately
+    setMessages([]);
 
     setIsThinking(true);
     setHasNewTip(false);
@@ -276,7 +363,7 @@ export default function AIAssistant({ gameState, mode, onTipMove, isOpen, onTogg
       
       const tipMessage = `${tipPhrase}\n\nSuggested Move: Play between ${moveDesc}\n\nWhy? ${newTip.explanation}\n\n${newTip.reasoning}\n\n${closingPhrase}`;
       
-      setMessages(prev => [...prev, {
+      setMessages([{
         role: 'assistant',
         content: tipMessage,
         timestamp: Date.now(),
@@ -287,7 +374,7 @@ export default function AIAssistant({ gameState, mode, onTipMove, isOpen, onTogg
         },
       }]);
     } else {
-      setMessages(prev => [...prev, {
+      setMessages([{
         role: 'assistant',
         content: "Hmm, I'm having trouble finding an optimal move right now. The board is quite complex! Try to think about controlling key squares and blocking your opponent.",
         timestamp: Date.now(),
@@ -371,10 +458,10 @@ export default function AIAssistant({ gameState, mode, onTipMove, isOpen, onTogg
 
   return (
     <>
-      {/* Button - always visible once appeared once */}
+      {/* Button - always visible once appeared once, but hidden when panel is open on mobile */}
       {(hasAppearedOnce || tipAvailable) && (
         <button 
-          className={`tip-button ${hasNewTip ? 'has-new-tip' : ''}`}
+          className={`tip-button ${hasNewTip ? 'has-new-tip' : ''} ${isOpen ? 'panel-open' : ''}`}
           onClick={handleRequestTip}
           title={hasNewTip ? "New tip available! Click for AI assistance" : "Open AI Tips"}
           style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: 10000 }}

@@ -14,6 +14,8 @@ export default function CycleResolutionPrompt({
   onHoverEndpoint 
 }: CycleResolutionPromptProps) {
   const [hoveredEndpoint, setHoveredEndpoint] = useState<SquareId | null>(null);
+  const [selectedEndpoint, setSelectedEndpoint] = useState<SquareId | null>(null);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   const handleHover = (endpoint: SquareId | null) => {
     setHoveredEndpoint(endpoint);
@@ -33,6 +35,26 @@ export default function CycleResolutionPrompt({
     }, 500);
   };
 
+  const handleClick = (endpoint: SquareId) => {
+    if (isMobile) {
+      // On mobile, toggle preview instead of resolving
+      if (selectedEndpoint === endpoint) {
+        // Unclick to remove preview
+        setSelectedEndpoint(null);
+        setHoveredEndpoint(null);
+        onHoverEndpoint?.(null);
+      } else {
+        // Click to preview
+        setSelectedEndpoint(endpoint);
+        setHoveredEndpoint(endpoint);
+        onHoverEndpoint?.(endpoint);
+      }
+    } else {
+      // On desktop, resolve immediately
+      onResolve(endpoint);
+    }
+  };
+
   if (!gameState.pendingCycle) return null;
 
   const lastMove = gameState.moves.find(m => m.id === gameState.pendingCycle!.cycleMoveId);
@@ -49,17 +71,17 @@ export default function CycleResolutionPrompt({
           return (
             <button
               key={endpoint}
-              className={`endpoint-button-inline ${hoveredEndpoint === endpoint ? 'hovered' : ''}`}
-              onClick={() => onResolve(endpoint)}
-              onMouseEnter={() => handleHover(endpoint)}
-              onMouseLeave={() => handleHover(null)}
+              className={`endpoint-button-inline ${hoveredEndpoint === endpoint ? 'hovered' : ''} ${selectedEndpoint === endpoint ? 'selected' : ''}`}
+              onClick={() => handleClick(endpoint)}
+              onMouseEnter={() => !isMobile && handleHover(endpoint)}
+              onMouseLeave={() => !isMobile && handleHover(null)}
               onTouchStart={() => handleTouchStart(endpoint)}
               onTouchEnd={handleTouchEnd}
             >
               <div className="endpoint-grid-preview">
                 <GridPreview highlightedSquare={endpoint} size={50} />
               </div>
-              <span className="endpoint-label">Square ({row}, {col})</span>
+              <span className="endpoint-label mobile-hidden">Square ({row}, {col})</span>
             </button>
           );
         })}

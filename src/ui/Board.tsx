@@ -34,6 +34,8 @@ export default function Board({
   const isResolvingRef = useRef(false);
   const resolvingCycleMoveIdRef = useRef<string | null>(null);
   const touchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const boardContainerRef = useRef<HTMLDivElement>(null);
+  const boardRef = useRef<HTMLDivElement>(null);
 
   // Get cycle endpoints if pending
   const cycleEndpoints: SquareId[] = gameState.pendingCycle
@@ -230,6 +232,44 @@ export default function Board({
     };
   }, []);
 
+  // #region agent log
+  useEffect(() => {
+    const logBoardDimensions = () => {
+      if (boardContainerRef.current && boardRef.current) {
+        const container = boardContainerRef.current;
+        const board = boardRef.current;
+        const containerRect = container.getBoundingClientRect();
+        const boardRect = board.getBoundingClientRect();
+        const containerStyle = window.getComputedStyle(container);
+        const boardStyle = window.getComputedStyle(board);
+        const parent = container.parentElement;
+        const parentRect = parent?.getBoundingClientRect();
+        const parentStyle = parent ? window.getComputedStyle(parent) : null;
+        const squares = board.querySelectorAll('.square');
+        const squareRects = Array.from(squares).map(sq => {
+          const rect = (sq as HTMLElement).getBoundingClientRect();
+          const style = window.getComputedStyle(sq as HTMLElement);
+          return {left: rect.left, right: rect.right, width: rect.width, height: rect.height, gridColumn: style.gridColumn, gridRow: style.gridRow};
+        });
+        const mobileLayout = document.querySelector('.mobile-layout');
+        const mobileCard = document.querySelector('.mobile-card');
+        const mobileContentArea = document.querySelector('.mobile-content-area');
+        const layoutRect = mobileLayout?.getBoundingClientRect();
+        const cardRect = mobileCard?.getBoundingClientRect();
+        const contentRect = mobileContentArea?.getBoundingClientRect();
+        const isOutOfBounds = squareRects.some(sq => sq.right > containerRect.right || sq.left < containerRect.left);
+        fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Board.tsx:useEffect',message:'Board dimensions with squares',data:{container:{width:containerRect.width,height:containerRect.height,top:containerRect.top,left:containerRect.left,right:containerRect.right,bottom:containerRect.bottom,aspectRatio:containerStyle.aspectRatio,maxWidth:containerStyle.maxWidth,maxHeight:containerStyle.maxHeight,widthStyle:containerStyle.width,paddingBottom:containerStyle.paddingBottom,heightStyle:containerStyle.height},board:{width:boardRect.width,height:boardRect.height,top:boardRect.top,left:boardRect.left,right:boardRect.right,bottom:boardRect.bottom,aspectRatio:boardStyle.aspectRatio,widthStyle:boardStyle.width,gridTemplateColumns:boardStyle.gridTemplateColumns},parent:{width:parentRect?.width,height:parentRect?.height,top:parentRect?.top,left:parentRect?.left,right:parentRect?.right,maxWidth:parentStyle?.maxWidth,maxHeight:parentStyle?.maxHeight},mobileLayout:{width:layoutRect?.width,left:layoutRect?.left,right:layoutRect?.right},mobileCard:{width:cardRect?.width,left:cardRect?.left,right:cardRect?.right},mobileContentArea:{width:contentRect?.width,left:contentRect?.left,right:contentRect?.right},squares:squareRects,isOutOfBounds:isOutOfBounds,viewportWidth:window.innerWidth,viewportHeight:window.innerHeight},timestamp:Date.now(),sessionId:'debug-session',runId:'run3',hypothesisId:'E'})}).catch(()=>{});
+      }
+    };
+    const timer = setTimeout(logBoardDimensions, 100);
+    window.addEventListener('resize', logBoardDimensions);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', logBoardDimensions);
+    };
+  }, [gameState]);
+  // #endregion
+
   // Get winning line if there's a winner
   const winningLine = useMemo(() => {
     if (!gameState.winner || !gameState.classical) return null;
@@ -248,8 +288,8 @@ export default function Board({
 
   return (
     <>
-      <div className="board-container">
-        <div className="board">
+      <div className="board-container" ref={boardContainerRef}>
+        <div className="board" ref={boardRef}>
           {squares.map(square => {
             const isCycleEndpoint = cycleEndpoints.includes(square);
             const isHoveredEndpoint = hoveredCycleEndpoint === square;

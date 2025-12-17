@@ -24,14 +24,14 @@ export default function GameControls({ gameState, mode, onNewGame, onCycleResolu
             <>
               <div className={`player-info ${gameState.currentPlayer === 'X' ? 'current' : ''} ${gameState.pendingCycle && gameState.pendingCycle.chooser === 'X' ? 'has-cycle-prompt' : ''}`}>
                 <div>
-                  <span className="player-label">Player 1:</span>
+                  <span className="player-label">Player<span className="player-number-mobile"> 1:</span></span>
                   <span className="player-emoji">{xEmoji}</span>
                   {gameState.currentPlayer === 'X' && <span className="current-indicator">Current</span>}
                 </div>
                 {gameState.pendingCycle && gameState.pendingCycle.chooser === 'X' && onCycleResolution && (
                   <div className="cycle-prompt-inline">
                     <p className="cycle-prompt-text">
-                      Choose how to collapse the cycle!
+                      Click options to preview the collapsed cycle
                     </p>
                     <CycleResolutionPrompt
                       gameState={gameState}
@@ -43,14 +43,14 @@ export default function GameControls({ gameState, mode, onNewGame, onCycleResolu
               </div>
               <div className={`player-info ${gameState.currentPlayer === 'O' ? 'current' : ''} ${gameState.pendingCycle && gameState.pendingCycle.chooser === 'O' ? 'has-cycle-prompt' : ''}`}>
                 <div>
-                  <span className="player-label">Player 2:</span>
+                  <span className="player-label">Player<span className="player-number-mobile"> 2:</span></span>
                   <span className="player-emoji">{oEmoji}</span>
                   {gameState.currentPlayer === 'O' && <span className="current-indicator">Current</span>}
                 </div>
                 {gameState.pendingCycle && gameState.pendingCycle.chooser === 'O' && onCycleResolution && (
                   <div className="cycle-prompt-inline">
                     <p className="cycle-prompt-text">
-                      Choose how to collapse the cycle!
+                      Click options to preview the collapsed cycle
                     </p>
                     <CycleResolutionPrompt
                       gameState={gameState}
@@ -72,7 +72,7 @@ export default function GameControls({ gameState, mode, onNewGame, onCycleResolu
                 {gameState.pendingCycle && gameState.pendingCycle.chooser === 'X' && onCycleResolution && (
                   <div className="cycle-prompt-inline">
                     <p className="cycle-prompt-text">
-                      Choose how to collapse the cycle!
+                      Click options to preview the collapsed cycle
                     </p>
                     <CycleResolutionPrompt
                       gameState={gameState}
