@@ -567,12 +567,21 @@
 }
 
 @media (max-width: 767px) {
+  /* On mobile, keep hovered-endpoint prominent but without scale transform */
   .square.hovered-endpoint {
-    background: inherit !important;
-    border-color: inherit !important;
-    border-width: inherit !important;
+    background: #ffcc80 !important;
+    border-color: #ff9800 !important;
+    border-width: 4px !important;
     transform: none !important;
-    z-index: auto !important;
+    z-index: 10 !important;
+    /* Make the pulse animation stronger for the hovered endpoint */
+    animation: pulse-strong 1.5s infinite;
+  }
+  
+  /* On mobile, make non-hovered cycle endpoints less prominent */
+  .square.cycle-endpoint:not(.hovered-endpoint) {
+    border-width: 2px;
+    animation: pulse-subtle 2.5s infinite;
   }
 }
 
@@ -582,6 +591,24 @@
   }
   50% {
     box-shadow: 0 0 0 10px rgba(255, 152, 0, 0);
+  }
+}
+
+@keyframes pulse-strong {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.9);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(255, 152, 0, 0);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 152, 0, 0);
   }
 }
 

@@ -23,16 +23,12 @@ export default function CycleResolutionPrompt({
   };
 
   const handleTouchStart = (endpoint: SquareId) => {
-    setHoveredEndpoint(endpoint);
-    onHoverEndpoint?.(endpoint);
+    // On mobile, touch should not trigger hover preview - only click does
+    // Disabled on mobile - only click should trigger preview
   };
 
   const handleTouchEnd = () => {
-    // Keep preview visible for a moment after touch ends
-    setTimeout(() => {
-      setHoveredEndpoint(null);
-      onHoverEndpoint?.(null);
-    }, 500);
+    // Disabled on mobile - preview is controlled by click, not touch
   };
 
   const handleClick = (endpoint: SquareId) => {
@@ -75,8 +71,8 @@ export default function CycleResolutionPrompt({
               onClick={() => handleClick(endpoint)}
               onMouseEnter={() => !isMobile && handleHover(endpoint)}
               onMouseLeave={() => !isMobile && handleHover(null)}
-              onTouchStart={() => handleTouchStart(endpoint)}
-              onTouchEnd={handleTouchEnd}
+              onTouchStart={isMobile ? undefined : () => handleTouchStart(endpoint)}
+              onTouchEnd={isMobile ? undefined : handleTouchEnd}
             >
               <div className="endpoint-grid-preview">
                 <GridPreview highlightedSquare={endpoint} size={50} />

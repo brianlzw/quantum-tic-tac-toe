@@ -93,27 +93,29 @@ export default function Board({
   const handleSquareClick = (square: SquareId) => {
     // If cycle is pending and this is a cycle endpoint, resolve cycle
     if (gameState.pendingCycle && cycleEndpoints.includes(square)) {
-      // On touch devices, if this endpoint is already being previewed, confirm it
-      if (touchedCycleEndpoint === square && hoveredCycleEndpoint === square) {
-        // Clear touch state and proceed with resolution
-        setTouchedCycleEndpoint(null);
-        if (touchTimeoutRef.current) {
-          clearTimeout(touchTimeoutRef.current);
-          touchTimeoutRef.current = null;
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+      
+      if (isMobile) {
+        // On mobile, first tap shows preview, second tap collapses
+        if (touchedCycleEndpoint === square && hoveredCycleEndpoint === square) {
+          // Second tap - clear preview state and proceed with resolution
+          setTouchedCycleEndpoint(null);
+          if (touchTimeoutRef.current) {
+            clearTimeout(touchTimeoutRef.current);
+            touchTimeoutRef.current = null;
+          }
+        } else {
+          // First tap - show preview
+          setTouchedCycleEndpoint(square);
+          onHoverCycleEndpoint(square);
+          return;
         }
       } else {
-        // First tap - just show preview (handled by touch handler)
-        return;
+        // On desktop, clicking directly triggers collapse
       }
       
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Board.tsx:73',message:'Square click for cycle resolution',data:{square,isAnimating,animationEndpoint,isResolving:isResolvingRef.current,resolvingCycleMoveId:resolvingCycleMoveIdRef.current,hasPendingCycle:!!gameState.pendingCycle,cycleMoveId:gameState.pendingCycle?.cycleMoveId,chooser:gameState.pendingCycle?.chooser,uncollapsedMovesCount:gameState.moves.filter(m=>m.collapsedTo===undefined).length,collapsedMovesCount:gameState.moves.filter(m=>m.collapsedTo!==undefined).length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       // Prevent multiple clicks while animating, already resolving, or if already processing this cycle
       if (isAnimating || animationEndpoint !== null || isResolvingRef.current || resolvingCycleMoveIdRef.current === gameState.pendingCycle.cycleMoveId) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Board.tsx:82',message:'Ignoring duplicate cycle resolution click',data:{square,isAnimating,animationEndpoint,isResolving:isResolvingRef.current,resolvingCycleMoveId:resolvingCycleMoveIdRef.current,currentCycleMoveId:gameState.pendingCycle?.cycleMoveId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         return;
       }
       setIsAnimating(true);
@@ -307,7 +309,7 @@ export default function Board({
               }
             };
 
-            // Touch handler for cycle endpoint preview - disabled on mobile
+            // Touch handler for cycle endpoint preview - disabled on mobile (mobile uses click handler)
             const handleSquareTouchStart = (e: React.TouchEvent) => {
               // Disable hover preview on mobile - only allow direct clicks
               if (isMobile) {
