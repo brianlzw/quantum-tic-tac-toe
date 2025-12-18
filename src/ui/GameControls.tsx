@@ -74,7 +74,7 @@ export default function GameControls({ gameState, mode, onNewGame, onCycleResolu
                     >
                       <p className="cycle-prompt-text">
                         <span className="cycle-prompt-text-desktop">Click options to preview the collapsed cycle</span>
-                        <span className="cycle-prompt-text-mobile">Preview</span>
+                        <span className="cycle-prompt-text-mobile">Tap to preview</span>
                       </p>
                       <button 
                         className="cycle-prompt-caret" 
@@ -126,7 +126,7 @@ export default function GameControls({ gameState, mode, onNewGame, onCycleResolu
                     >
                       <p className="cycle-prompt-text">
                         <span className="cycle-prompt-text-desktop">Click options to preview the collapsed cycle</span>
-                        <span className="cycle-prompt-text-mobile">Preview</span>
+                        <span className="cycle-prompt-text-mobile">Tap to preview</span>
                       </p>
                       <button 
                         className="cycle-prompt-caret" 
@@ -181,7 +181,7 @@ export default function GameControls({ gameState, mode, onNewGame, onCycleResolu
                     >
                       <p className="cycle-prompt-text">
                         <span className="cycle-prompt-text-desktop">Click options to preview the collapsed cycle</span>
-                        <span className="cycle-prompt-text-mobile">Preview</span>
+                        <span className="cycle-prompt-text-mobile">Tap to preview</span>
                       </p>
                       <button 
                         className="cycle-prompt-caret" 

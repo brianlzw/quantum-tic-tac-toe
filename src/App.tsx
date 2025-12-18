@@ -51,7 +51,7 @@ function AITipsButton({ gameState, mode, onClick }: { gameState: GameState; mode
       title={hasNewTip ? "New tip available! Click for AI assistance" : "Open AI Tips"}
     >
       <span className="tip-button-icon">🪄</span>
-      <span className="tip-button-text">AI Tips</span>
+      <span className="tip-button-text">AI tips</span>
       {hasNewTip && <span className="tip-button-badge">!</span>}
     </button>
   );
@@ -500,13 +500,13 @@ function App() {
               />
             )}
             <button 
-              className="pill-button rule-button"
+              className={`pill-button rule-button ${showTutorial ? 'active' : ''}`}
               onClick={() => {
                 if (showAIAssistant) setShowAIAssistant(false);
                 setShowTutorial(!showTutorial);
               }}
             >
-              Game rule
+              Explain
             </button>
           </div>
         </div>
@@ -693,13 +693,13 @@ function App() {
             <div className="header-bar">
               <h1>Quantum Tic-Tac-Toe</h1>
               <button 
-                className="tutorial-toggle-button"
+                className={`tutorial-toggle-button ${showTutorial ? 'active' : ''}`}
                 onClick={() => {
                   if (showAIAssistant) setShowAIAssistant(false);
                   setShowTutorial(!showTutorial);
                 }}
               >
-                {showTutorial ? 'Hide Rules' : 'Game rule'}
+                Explain
               </button>
             </div>
           </div>
@@ -797,6 +797,67 @@ function App() {
       }
     };
   }, [showAIAssistant]);
+
+  // Debug: Log layout dimensions when AI assistant opens/closes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const logLayoutDimensions = () => {
+      const appMainArea = document.querySelector('.app-main-area');
+      const leftSidebar = document.querySelector('.left-sidebar');
+      const appContainer = document.querySelector('.app');
+      const aiWrapper = document.querySelector('.ai-assistant-wrapper');
+      const tutorialWrapper = document.querySelector('.tutorial-wrapper');
+      const appContainerEl = document.querySelector('.app-container');
+      const body = document.body;
+      const html = document.documentElement;
+      
+      if (appMainArea && leftSidebar && appContainer && appContainerEl) {
+        const mainAreaRect = appMainArea.getBoundingClientRect();
+        const sidebarRect = leftSidebar.getBoundingClientRect();
+        const appRect = appContainer.getBoundingClientRect();
+        const containerRect = appContainerEl.getBoundingClientRect();
+        const aiWrapperRect = aiWrapper?.getBoundingClientRect();
+        const tutorialWrapperRect = tutorialWrapper?.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const bodyWidth = body.scrollWidth;
+        const htmlWidth = html.scrollWidth;
+        
+        const boardContainer = document.querySelector('.board-container');
+        const boardContainerRect = boardContainer?.getBoundingClientRect();
+        
+        const mainAreaStyle = window.getComputedStyle(appMainArea);
+        const containerStyle = window.getComputedStyle(appContainerEl);
+        const sidebarStyle = window.getComputedStyle(leftSidebar);
+        const appStyle = window.getComputedStyle(appContainer);
+        const tutorialWrapperStyle = tutorialWrapper ? window.getComputedStyle(tutorialWrapper) : null;
+        const aiWrapperStyle = aiWrapper ? window.getComputedStyle(aiWrapper) : null;
+        const boardContainerStyle = boardContainer ? window.getComputedStyle(boardContainer) : null;
+        
+        // Get class lists
+        const tutorialClasses = tutorialWrapper?.className || '';
+        const aiClasses = aiWrapper?.className || '';
+        
+        const totalChildrenWidth = sidebarRect.width + appRect.width + (tutorialWrapperRect?.width || 0) + (aiWrapperRect?.width || 0);
+        const gaps = 20 * 3; // 3 gaps of 20px each
+        const totalNeededWidth = totalChildrenWidth + gaps;
+        
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:useEffect:layout',message:'Comprehensive layout with board analysis',data:{showAIAssistant,showTutorial,viewportWidth,bodyScrollWidth:bodyWidth,htmlScrollWidth:htmlWidth,appContainer:{width:containerRect.width,left:containerRect.left,right:containerRect.right,maxWidth:containerStyle.maxWidth,padding:containerStyle.padding,overflowX:containerStyle.overflowX,widthCSS:containerStyle.width},appMainArea:{width:mainAreaRect.width,left:mainAreaRect.left,right:mainAreaRect.right,scrollWidth:appMainArea.scrollWidth,clientWidth:appMainArea.clientWidth,overflowX:mainAreaStyle.overflowX,minWidth:mainAreaStyle.minWidth,widthCSS:mainAreaStyle.width},leftSidebar:{width:sidebarRect.width,left:sidebarRect.left,right:sidebarRect.right,flexShrink:sidebarStyle.flexShrink},app:{width:appRect.width,left:appRect.left,right:appRect.right,flex:appStyle.flex,minWidth:appStyle.minWidth,overflowX:appStyle.overflowX,widthCSS:appStyle.width},boardContainer:{width:boardContainerRect?.width||0,left:boardContainerRect?.left||0,right:boardContainerRect?.right||0,parentWidth:appRect.width,isCutOff:boardContainerRect?boardContainerRect.right>appRect.right:false,overflowX:boardContainerStyle?.overflowX},tutorialWrapper:{width:tutorialWrapperRect?.width||0,left:tutorialWrapperRect?.left||0,right:tutorialWrapperRect?.right||0,visible:!!tutorialWrapperRect&&tutorialWrapperRect.width>0,classes:tutorialClasses,marginLeft:tutorialWrapperStyle?.marginLeft,marginRight:tutorialWrapperStyle?.marginRight,hasAiHidden:tutorialClasses.includes('ai-hidden'),hasTutorialHidden:tutorialClasses.includes('tutorial-hidden')},aiWrapper:{width:aiWrapperRect?.width||0,left:aiWrapperRect?.left||0,right:aiWrapperRect?.right||0,visible:!!aiWrapperRect&&aiWrapperRect.width>0,classes:aiClasses,marginLeft:aiWrapperStyle?.marginLeft,marginRight:aiWrapperStyle?.marginRight,hasHidden:aiClasses.includes('hidden')},totalChildrenWidth,gaps,totalNeededWidth,hasOverflow:totalNeededWidth>viewportWidth,sidebarCutOff:sidebarRect.right>viewportWidth,aiPanelCutOff:aiWrapperRect&&aiWrapperRect.right>viewportWidth},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'B'})}).catch(()=>{});
+        // #endregion
+      }
+    };
+    
+    // Log immediately and after a short delay to catch layout changes
+    logLayoutDimensions();
+    const timer = setTimeout(logLayoutDimensions, 100);
+    const timer2 = setTimeout(logLayoutDimensions, 300);
+    
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(timer2);
+    };
+  }, [showAIAssistant, showTutorial]);
 
   return (
     <>
