@@ -207,11 +207,24 @@
   font-weight: 500;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  display: flex;
+  align-items: center;
 }
 
 .tutorial-toggle-button:hover {
   background: rgba(0, 0, 0, 0.08);
   border-color: rgba(0, 0, 0, 0.15);
+}
+
+.tutorial-toggle-button.active {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
+  color: #667eea;
+}
+
+.tutorial-toggle-button.active:hover {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.4);
 }
 
 .app {
@@ -1222,6 +1235,26 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.youtube-video-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.youtube-video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .tutorial-panel section {
   margin-bottom: 25px;
 }
@@ -1230,6 +1263,121 @@
   color: #667eea;
   margin-bottom: 10px;
   font-size: 1.1rem;
+}
+
+.tutorial-panel p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+  font-size: 0.9rem;
+  color: #1d1d1f;
+}
+
+/* Tutorial Carousel Styles */
+.tutorial-overview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tutorial-overview h3 {
+  color: #1d1d1f;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.tutorial-section-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tutorial-section-list li {
+  margin: 0;
+}
+
+.tutorial-section-button {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(102, 126, 234, 0.08);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  color: #667eea;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+}
+
+.tutorial-section-button:hover {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.tutorial-section-button:active {
+  transform: translateY(0);
+}
+
+.tutorial-slide {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tutorial-slide-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 10px;
+}
+
+.tutorial-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  gap: 12px;
+}
+
+.tutorial-nav-button {
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  color: #1d1d1f;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  flex: 0 0 auto;
+}
+
+.tutorial-nav-button:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.tutorial-nav-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tutorial-slide-indicator {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 500;
+  flex: 1;
+  text-align: center;
 }
 
 .tutorial-panel ul {
@@ -2118,11 +2266,14 @@
 
   .cycle-collapse-hint {
     text-align: center;
-    font-size: 0.875rem;
-    color: #666;
-    margin-bottom: 12px;
-    padding: 8px 12px;
-    background: rgba(0, 122, 255, 0.1);
+    font-size: 13px !important;
+    color: #1D1D1F !important;
+    margin-bottom: 6px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    background: #FFF199 !important;
     border-radius: 8px;
     animation: fadeIn 0.3s ease-out;
     transition: opacity 0.3s ease-out, margin-bottom 0.3s ease-out !important;
@@ -2346,7 +2497,7 @@
                 padding 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     max-height: 1000px;
     opacity: 1;
-    margin-top: 8px;
+    margin-top: 4px !important;
     transform: translateY(0) scaleY(1);
     transform-origin: top;
   }
@@ -2444,19 +2595,26 @@
     position: relative !important;
     bottom: auto !important;
     right: auto !important;
-    padding: 10px 16px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
     color: white !important;
     border: none !important;
-    border-radius: 50px !important;
+    border-radius: 16px !important;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
+    border-bottom-right-radius: 16px !important;
+    border-bottom-left-radius: 16px !important;
     cursor: pointer !important;
-    font-size: 0.875rem !important;
-    font-weight: 600 !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif !important;
     display: flex !important;
     align-items: center !important;
-    gap: 6px !important;
+    gap: 2px !important;
     box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4) !important;
     z-index: auto !important;
     min-height: 40px !important;
@@ -2472,7 +2630,7 @@
   }
 
   .mobile-tip-button .tip-button-text {
-    font-weight: 600 !important;
+    font-weight: 400 !important;
   }
 
   .mobile-tip-button .tip-button-badge {
@@ -2572,6 +2730,15 @@
     color: #666;
     min-height: 48px !important;
     height: 48px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rule-button.active {
+    background: rgba(102, 126, 234, 0.15);
+    color: #667eea;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
   }
 
   /* Emoji Selector Specifics */
