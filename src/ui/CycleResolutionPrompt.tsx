@@ -75,7 +75,7 @@ export default function CycleResolutionPrompt({
               onTouchEnd={isMobile ? undefined : handleTouchEnd}
             >
               <div className="endpoint-grid-preview">
-                <GridPreview highlightedSquare={endpoint} size={50} />
+                <GridPreview highlightedSquare={endpoint} size={isMobile ? 40 : 50} />
               </div>
               <span className="endpoint-label mobile-hidden">Square ({row}, {col})</span>
             </button>

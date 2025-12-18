@@ -368,33 +368,6 @@ function App() {
   // Check if it's a tie (game over but no winner)
   const isTie = gameState.gameOver && !gameState.winner && gameState.classical.every(sq => sq !== null);
 
-  // #region agent log
-  useEffect(() => {
-    if (!isMobile) return;
-    const logMobileLayout = () => {
-      const title = document.querySelector('.mobile-title');
-      const playerDisplay = document.querySelector('.mobile-player-display');
-      const mobileCard = document.querySelector('.mobile-card');
-      if (title && playerDisplay && mobileCard) {
-        const titleRect = title.getBoundingClientRect();
-        const playerRect = playerDisplay.getBoundingClientRect();
-        const cardRect = mobileCard.getBoundingClientRect();
-        const titleStyle = window.getComputedStyle(title);
-        const playerStyle = window.getComputedStyle(playerDisplay);
-        const cardStyle = window.getComputedStyle(mobileCard);
-        const titleOffsetFromCard = titleRect.top - cardRect.top;
-        const playerOffsetFromCard = playerRect.top - cardRect.top;
-        fetch('http://127.0.0.1:7242/ingest/e409a507-9c1d-4cc4-be6d-3240ad6256b6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:useEffect',message:'Mobile layout order check POST-FIX',data:{title:{top:titleRect.top,left:titleRect.left,width:titleRect.width,height:titleRect.height,order:titleStyle.order,offsetFromCardTop:titleOffsetFromCard},playerDisplay:{top:playerRect.top,left:playerRect.left,width:playerRect.width,height:playerRect.height,order:playerStyle.order,hasTopClass:playerDisplay.classList.contains('top'),offsetFromCardTop:playerOffsetFromCard},mobileCard:{top:cardRect.top,left:cardRect.left,width:cardRect.width,height:cardRect.height,display:cardStyle.display,flexDirection:cardStyle.flexDirection},emojiSelectionComplete:gameState.emojiSelectionComplete,titleIsFirst:titleOffsetFromCard < playerOffsetFromCard},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
-      }
-    };
-    const timer = setTimeout(logMobileLayout, 100);
-    window.addEventListener('resize', logMobileLayout);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', logMobileLayout);
-    };
-  }, [isMobile, gameState.emojiSelectionComplete]);
-  // #endregion
 
   const renderMobileLayout = () => {
     const showGameControls = !gameState.emojiSelectionComplete;
@@ -469,7 +442,7 @@ function App() {
               <div className="mobile-content-area">
                 {gameState.pendingCycle && (
                   <div className="cycle-collapse-hint">
-                    Click on one of the highlighted squares to collapse the cycle
+                    Tap once to preview, tap again to collapse the cycle
                   </div>
                 )}
                 <Board

@@ -839,17 +839,24 @@
 
   @media (max-width: 767px) {
     .cycle-prompt-text {
-      font-size: 11px !important;
+      font-size: 10px !important;
       margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1.2 !important;
     }
 
     .cycle-prompt-header {
       margin-bottom: 0 !important;
+      padding: 0 !important;
+      min-height: auto !important;
+      height: auto !important;
+      gap: 4px !important;
     }
 
     .cycle-prompt-text-mobile {
       display: inline !important;
-      font-size: 12px !important;
+      font-size: 10px !important;
+      line-height: 1.2 !important;
     }
 
     .cycle-prompt-text-desktop {
@@ -858,6 +865,21 @@
 
     .cycle-prompt-caret {
       display: block !important;
+      padding: 0 !important;
+      margin-left: 4px !important;
+      flex-shrink: 0 !important;
+      width: auto !important;
+      height: auto !important;
+      min-width: auto !important;
+      min-height: auto !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .cycle-prompt-caret svg {
+      width: 10px !important;
+      height: 10px !important;
     }
 
     .player-number-mobile {
@@ -2014,8 +2036,8 @@
     width: 100%;
     max-width: 100vw;
     position: relative;
-    padding: 28px 0 110px 0;
-    padding-bottom: 110px; /* Space for bottom bar */
+    padding: 16px 0 90px 0;
+    padding-bottom: 90px; /* Space for bottom bar */
     box-sizing: border-box;
     overflow-x: hidden;
     overflow-y: hidden;
@@ -2029,8 +2051,8 @@
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    max-height: calc(100vh - 120px);
-    max-height: calc(100dvh - 120px);
+    max-height: calc(100vh - 16px - 90px);
+    max-height: calc(100dvh - 16px - 90px);
     width: 100%;
     max-width: 100%;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -2139,6 +2161,15 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
+  .game-info {
+    margin-bottom: 0 !important;
+  }
+
+  .game-controls {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
   .mobile-title {
     order: 0;
   }
@@ -2150,6 +2181,7 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    margin-bottom: 0 !important;
   }
 
   .player-info {
@@ -2280,19 +2312,29 @@
                 height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     transform-origin: top !important;
     overflow: hidden !important;
-    padding: 8px 4px !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
   }
 
   .cycle-prompt-inline.minimized {
-    padding: 8px 4px !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
   }
 
   .cycle-prompt-inline .cycle-prompt-header {
     margin-bottom: 0 !important;
+    padding: 0 !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    align-items: center !important;
+    min-height: auto !important;
+    height: auto !important;
   }
 
   .cycle-prompt-content {
@@ -2345,7 +2387,7 @@
     align-items: center !important;
     flex: 1 !important;
     width: auto !important;
-    padding: 10px 8px !important;
+    padding: 4px 8px !important;
     transition: all 0.2s ease-out !important;
   }
 
@@ -2355,7 +2397,7 @@
   }
 
   .endpoint-grid-preview {
-    margin-bottom: 4px !important;
+    margin-bottom: 2px !important;
     margin-right: 0 !important;
     flex-shrink: 0 !important;
     display: flex !important;
@@ -2455,15 +2497,17 @@
     display: flex;
     background: rgba(0, 0, 0, 0.04);
     border-radius: 10px;
-    padding: 4px;
+    padding: 2px;
     border: 1px solid rgba(0, 0, 0, 0.08);
     gap: 0;
+    height: 48px;
+    align-items: center;
   }
 
   .mode-selector-pill .pill-button {
     flex: 0 0 auto;
     width: auto;
-    padding: 8px 16px;
+    padding: 6px 16px;
     border: none;
     background: transparent;
     color: #86868b;
@@ -2472,8 +2516,12 @@
     font-size: 0.875rem;
     font-weight: 500;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    min-height: 44px;
+    min-height: 40px;
+    height: 40px;
     touch-action: manipulation;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .mode-selector-pill .pill-button.active {
@@ -2844,7 +2892,7 @@
   }
 
   /* Ensure minimum touch target size for all buttons */
-  button:not(.spooky-mark):not(.classical-mark) {
+  button:not(.spooky-mark):not(.classical-mark):not(.cycle-prompt-caret) {
     min-height: 44px;
     min-width: 44px;
   }
