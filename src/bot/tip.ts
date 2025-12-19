@@ -1,6 +1,7 @@
 import type { GameState, SquareId } from '../game/types';
 import { isLegalMove, addQuantumMove, resolveCycle } from '../game/engine';
 import { determineWinner } from '../game/scoring';
+import { getCycleEdges, wouldCreateCycle } from '../game/cycle';
 
 export interface Tip {
   move: { a: SquareId; b: SquareId };
@@ -22,8 +23,49 @@ export function getPlayerTip(gameState: GameState): Tip | null {
     return null;
   }
 
+  // Filter out moves that would create trivial 2-line cycles
+  const uncollapsedMoves = gameState.moves.filter(m => m.collapsedTo === undefined);
+  const filteredMoves = legalMoves.filter(move => {
+    // Check if this move would create a cycle
+    if (!wouldCreateCycle(move.a, move.b, uncollapsedMoves)) {
+      return true; // No cycle, keep it
+    }
+    
+    // If it creates a cycle, check if it's a trivial 2-line cycle
+    // A 2-line cycle happens when there's already a direct move between these squares
+    const hasDirectConnection = uncollapsedMoves.some(m => 
+      (m.a === move.a && m.b === move.b) || (m.a === move.b && m.b === move.a)
+    );
+    
+    if (hasDirectConnection) {
+      // This would create a trivial 2-line cycle, filter it out
+      return false;
+    }
+    
+    // Check cycle size using getCycleEdges - if cycle has only 2 edges, it's trivial
+    // We need to simulate the move first to use getCycleEdges
+    const testMove = {
+      id: 'test',
+      player: gameState.currentPlayer,
+      moveIndex: gameState.moveNumber,
+      a: move.a,
+      b: move.b,
+    };
+    const cycleEdges = getCycleEdges(testMove, uncollapsedMoves);
+    
+    // If cycle has exactly 2 edges (the existing path + new move), it's trivial
+    if (cycleEdges.length === 2) {
+      return false;
+    }
+    
+    return true; // Non-trivial cycle, keep it
+  });
+
+  // If all moves were filtered out, fall back to all legal moves
+  const movesToEvaluate = filteredMoves.length > 0 ? filteredMoves : legalMoves;
+
   // Evaluate all moves and find the best one
-  const evaluatedMoves = legalMoves.map(move => ({
+  const evaluatedMoves = movesToEvaluate.map(move => ({
     move,
     score: evaluateMoveForPlayer(gameState, move),
   }));

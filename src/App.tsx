@@ -1,6 +1,6 @@
 import { useReducer, useState, useEffect, useRef } from 'react';
 import { createGameState, addQuantumMove, resolveCycle } from './game/engine';
-import type { GameState, GameMode, SquareId, PlayerEmoji } from './game/types';
+import type { GameState, GameMode, SquareId, PlayerEmoji, BotDifficulty } from './game/types';
 import Board from './ui/Board';
 import GameControls from './ui/GameControls';
 import TutorialPanel from './ui/TutorialPanel';
@@ -155,6 +155,7 @@ function App() {
   }, [gameState.pendingCycle]);
   // #endregion
   const [mode, setMode] = useState<GameMode>('two-player');
+  const [botDifficulty, setBotDifficulty] = useState<BotDifficulty>('medium');
   const [selectedSquare, setSelectedSquare] = useState<SquareId | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
@@ -198,7 +199,7 @@ function App() {
     if (mode === 'vs-bot' && !gameState.gameOver && !gameState.pendingCycle) {
       if (gameState.currentPlayer === 'O') {
         const timer = setTimeout(() => {
-          const botMove = makeBotMove(gameState);
+          const botMove = makeBotMove(gameState, botDifficulty);
           if (botMove) {
             saveToHistory(gameState);
             dispatch({ type: 'MAKE_MOVE', a: botMove.a, b: botMove.b });
@@ -216,7 +217,7 @@ function App() {
     if (mode === 'vs-bot' && gameState.pendingCycle) {
       if (gameState.pendingCycle.chooser === 'O') {
         const timer = setTimeout(() => {
-          const choice = makeBotCycleChoice(gameState);
+          const choice = makeBotCycleChoice(gameState, botDifficulty);
           if (choice !== null) {
             saveToHistory(gameState);
             dispatch({ type: 'RESOLVE_CYCLE', endpoint: choice });
@@ -463,20 +464,33 @@ function App() {
         <div className="mobile-bottom-bar">
           <div className="mobile-bar-left">
             {!gameState.emojiSelectionComplete ? (
-              <div className="mode-selector-pill">
-                <button
-                  className={`pill-button ${mode === 'two-player' ? 'active' : ''}`}
-                  onClick={() => handleModeChange('two-player')}
-                >
-                  2 Players
-                </button>
-                <button
-                  className={`pill-button ${mode === 'vs-bot' ? 'active' : ''}`}
-                  onClick={() => handleModeChange('vs-bot')}
-                >
-                  vs Bot
-                </button>
-              </div>
+              <>
+                <div className="mode-selector-pill">
+                  <button
+                    className={`pill-button ${mode === 'two-player' ? 'active' : ''}`}
+                    onClick={() => handleModeChange('two-player')}
+                  >
+                    2 Players
+                  </button>
+                  <button
+                    className={`pill-button ${mode === 'vs-bot' ? 'active' : ''}`}
+                    onClick={() => handleModeChange('vs-bot')}
+                  >
+                    vs Bot
+                  </button>
+                </div>
+                {mode === 'vs-bot' && (
+                  <select
+                    className="mobile-difficulty-dropdown"
+                    value={botDifficulty}
+                    onChange={(e) => setBotDifficulty(e.target.value as BotDifficulty)}
+                  >
+                    <option value="beginner">Beginner</option>
+                    <option value="medium">Medium</option>
+                    <option value="advanced">Hard</option>
+                  </select>
+                )}
+              </>
             ) : (
               <div className="game-actions-pill">
                 <button className="pill-button" onClick={handleUndo} disabled={gameHistory.length === 0 || gameState.gameOver || !!gameState.pendingCycle || (mode === 'vs-bot' && gameState.currentPlayer === 'O')}>
@@ -638,6 +652,33 @@ function App() {
               />
             )}
           </div>
+
+          {/* Bot Difficulty selector - only show in vs-bot mode during emoji selection */}
+          {mode === 'vs-bot' && !gameState.emojiSelectionComplete && (
+            <div className="sidebar-section">
+              <div className="section-title">Level</div>
+              <div className="difficulty-buttons">
+                <button
+                  className={`difficulty-button ${botDifficulty === 'beginner' ? 'active' : ''}`}
+                  onClick={() => setBotDifficulty('beginner')}
+                >
+                  Beginner
+                </button>
+                <button
+                  className={`difficulty-button ${botDifficulty === 'medium' ? 'active' : ''}`}
+                  onClick={() => setBotDifficulty('medium')}
+                >
+                  Medium
+                </button>
+                <button
+                  className={`difficulty-button ${botDifficulty === 'advanced' ? 'active' : ''}`}
+                  onClick={() => setBotDifficulty('advanced')}
+                >
+                  Hard
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Winner and tie messages - only show when game has started */}
           {gameState.emojiSelectionComplete && (

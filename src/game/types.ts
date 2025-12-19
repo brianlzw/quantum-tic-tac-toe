@@ -41,8 +41,11 @@ export interface GameState {
 
 export type GameMode = 'two-player' | 'vs-bot';
 
+export type BotDifficulty = 'beginner' | 'medium' | 'advanced';
+
 export interface GameConfig {
   mode: GameMode;
   botPlayer?: Player;
+  botDifficulty?: BotDifficulty;
 }
 
