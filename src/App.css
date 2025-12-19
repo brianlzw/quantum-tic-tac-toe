@@ -1005,6 +1005,31 @@
   font-weight: 600;
 }
 
+.winner-message.bot-win {
+  background: rgba(211, 47, 47, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(211, 47, 47, 0.2);
+}
+
+.winner-message.bot-win h2 {
+  color: rgba(255, 255, 255, 1);
+}
+
+@keyframes winnerPulseBotWin {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 16px rgba(211, 47, 47, 0.2);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 6px 24px rgba(211, 47, 47, 0.3);
+  }
+}
+
+.winner-message.bot-win {
+  animation: slideInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1), winnerPulseBotWin 2s ease-in-out infinite;
+}
+
 .winner-message.tie-message {
   background: rgba(200, 200, 200, 0.9);
   border-color: rgba(100, 100, 100, 0.3);
@@ -1450,6 +1475,45 @@
   margin-bottom: 30px;
   width: 100%;
   box-sizing: border-box;
+}
+
+
+.difficulty-buttons {
+  display: flex;
+  gap: 0;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  padding: 4px 2px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.difficulty-button {
+  flex: 1;
+  padding: 8px 8px;
+  border: none;
+  background: transparent;
+  color: #86868b;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.difficulty-button:hover:not(.active):not(:disabled) {
+  color: #1d1d1f;
+}
+
+.difficulty-button.active {
+  background: white;
+  color: #1d1d1f;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
 }
 
 .mode-selector-container {
@@ -2585,10 +2649,51 @@
     pointer-events: auto;
   }
 
+  .mobile-bar-left {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
   .mobile-bar-right {
     display: flex;
     gap: 8px;
     align-items: center;
+  }
+
+  .mobile-difficulty-dropdown {
+    padding: 6px 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #1d1d1f;
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+    cursor: pointer;
+    min-height: 40px;
+    height: 40px;
+    touch-action: manipulation;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%231d1d1f' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 28px;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  .mobile-difficulty-dropdown:hover {
+    background-color: rgba(255, 255, 255, 1);
+    border-color: rgba(0, 0, 0, 0.15);
+  }
+
+  .mobile-difficulty-dropdown:focus {
+    outline: none;
+    border-color: #007AFF;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
   }
 
   .mobile-tip-button {
@@ -2808,6 +2913,7 @@
     padding-top: 8px !important;
     padding-bottom: 8px !important;
   }
+
 
   /* Floating Start Game Button (Internal) */
   .start-game-section {

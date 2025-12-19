@@ -30,7 +30,13 @@ const EMOJI_OPTIONS = [
   '🦄', '🦘', '🦡', '🦨', '🦝', '🦧', '🦫', '🦥', '🦦', '🐿️', '🦔',
 ];
 
-export default function EmojiSelector({ mode, onModeChange, onSelect, onStartGame, onEmojiChange }: EmojiSelectorProps) {
+export default function EmojiSelector({ 
+  mode, 
+  onModeChange, 
+  onSelect, 
+  onStartGame, 
+  onEmojiChange
+}: EmojiSelectorProps) {
   const [selectedX, setSelectedX] = useState<string | null>(null);
   const [selectedO, setSelectedO] = useState<string | null>(null);
   const [emojisConfirmed, setEmojisConfirmed] = useState(false);
