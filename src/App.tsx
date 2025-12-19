@@ -171,7 +171,7 @@ function App() {
 
   // Hide splash screen after 1-3 seconds
   useEffect(() => {
-    const splashDuration = 2000; // 2 seconds
+    const splashDuration = 4000; // 4 seconds (2x the original)
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, splashDuration);
@@ -904,6 +904,12 @@ function App() {
     <>
       {showSplash && (
         <div className={`splash-screen ${isMobile ? 'splash-screen-mobile' : ''}`}>
+          <div className="stars"></div>
+          <div className="shooting-star"></div>
+          <div className="shooting-star"></div>
+          <div className="shooting-star"></div>
+          <div className="shooting-star"></div>
+          <div className="shooting-star"></div>
           <h1 className="splash-title">Quantum Tic-Tac-Toe</h1>
           <div className="splash-credit">
             Made by{' '}
