@@ -1,5 +1,5 @@
 import type { GameState, QuantumMove, SquareId, Player, ClassicalMark } from './types';
-import { wouldCreateCycle } from './cycle';
+import { wouldCreateCycle, wouldCreateTwoLineCycle } from './cycle';
 import { collapseCycle, applyCollapse } from './collapse';
 import { determineWinner } from './scoring';
 
@@ -37,6 +37,19 @@ export function isLegalMove(
 }
 
 /**
+ * Check if a move would create a 2-line cycle (illegal).
+ * Requires access to uncollapsed moves to check for cycles.
+ */
+export function wouldCreateIllegalTwoLineCycle(
+  a: SquareId,
+  b: SquareId,
+  gameState: GameState
+): boolean {
+  const uncollapsedMoves = getUncollapsedMoves(gameState.moves);
+  return wouldCreateTwoLineCycle(a, b, uncollapsedMoves);
+}
+
+/**
  * Create a new quantum move.
  */
 function createMove(
@@ -69,17 +82,22 @@ export function addQuantumMove(
   state: GameState,
   a: SquareId,
   b: SquareId
-): { state: GameState; cycleCreated: boolean } {
+): { state: GameState; cycleCreated: boolean; isIllegal?: boolean } {
   if (state.gameOver) {
-    return { state, cycleCreated: false };
+    return { state, cycleCreated: false, isIllegal: false };
   }
 
   if (!isLegalMove(a, b, state.classical)) {
-    return { state, cycleCreated: false };
+    return { state, cycleCreated: false, isIllegal: false };
+  }
+
+  // Check for 2-line cycles (illegal)
+  const uncollapsedMoves = getUncollapsedMoves(state.moves);
+  if (wouldCreateTwoLineCycle(a, b, uncollapsedMoves)) {
+    return { state, cycleCreated: false, isIllegal: true };
   }
 
   const newMove = createMove(state.currentPlayer, state.moveNumber, a, b);
-  const uncollapsedMoves = getUncollapsedMoves(state.moves);
   const cycleCreated = wouldCreateCycle(a, b, uncollapsedMoves);
 
   const newMoves = [...state.moves, newMove];
