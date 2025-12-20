@@ -1,5 +1,5 @@
 import { useReducer, useState, useEffect, useRef } from 'react';
-import { createGameState, addQuantumMove, resolveCycle } from './game/engine';
+import { createGameState, addQuantumMove, resolveCycle, wouldCreateIllegalTwoLineCycle } from './game/engine';
 import type { GameState, GameMode, SquareId, PlayerEmoji, BotDifficulty } from './game/types';
 import Board from './ui/Board';
 import GameControls from './ui/GameControls';
@@ -70,6 +70,10 @@ function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'MAKE_MOVE': {
       const result = addQuantumMove(state, action.a, action.b);
+      if (result.isIllegal) {
+        // Don't apply illegal moves - return state unchanged
+        return state;
+      }
       if (result.cycleCreated) {
         soundManager.playCycle();
       }
@@ -164,6 +168,7 @@ function App() {
   const [gameHistory, setGameHistory] = useState<GameState[]>([]);
   const [selectedEmojiX, setSelectedEmojiX] = useState<string | null>(null);
   const [selectedEmojiO, setSelectedEmojiO] = useState<string | null>(null);
+  const [illegalMoveWarning, setIllegalMoveWarning] = useState<{ squares: [SquareId, SquareId] } | null>(null);
   const resolvingCycleMoveIdRef = useRef<string | null>(null);
   const isResolvingCycleRef = useRef<string | null>(null); // Track which cycle is being resolved
   const [isMobile, setIsMobile] = useState(false);
@@ -263,6 +268,7 @@ function App() {
       // First square selected
       if (gameState.classical[square] === null) {
         setSelectedSquare(square);
+        setIllegalMoveWarning(null); // Clear any previous warning
         soundManager.playSelect();
       } else {
         soundManager.playError();
@@ -270,12 +276,23 @@ function App() {
     } else if (selectedSquare === square) {
       // Deselect
       setSelectedSquare(null);
+      setIllegalMoveWarning(null);
     } else {
-      // Second square selected - make move
-      saveToHistory(gameState);
-      dispatch({ type: 'MAKE_MOVE', a: selectedSquare, b: square });
-      setSelectedSquare(null);
-      soundManager.playMove();
+      // Second square selected - check if move is illegal
+      if (wouldCreateIllegalTwoLineCycle(selectedSquare, square, gameState)) {
+        // Show warning for illegal 2-line cycle
+        setIllegalMoveWarning({ squares: [selectedSquare, square] });
+        soundManager.playError();
+        // Clear warning after 3 seconds
+        setTimeout(() => setIllegalMoveWarning(null), 3000);
+      } else {
+        // Legal move - proceed
+        setIllegalMoveWarning(null);
+        saveToHistory(gameState);
+        dispatch({ type: 'MAKE_MOVE', a: selectedSquare, b: square });
+        setSelectedSquare(null);
+        soundManager.playMove();
+      }
     }
   };
 
@@ -454,6 +471,7 @@ function App() {
                   hoveredCycleEndpoint={hoveredCycleEndpoint}
                   onHoverCycleEndpoint={setHoveredCycleEndpoint}
                   onCycleResolutionHandlerReady={setCycleResolutionHandler}
+                  illegalMoveWarning={illegalMoveWarning}
                 />
               </div>
             </>
@@ -762,6 +780,7 @@ function App() {
               hoveredCycleEndpoint={hoveredCycleEndpoint}
               onHoverCycleEndpoint={setHoveredCycleEndpoint}
               onCycleResolutionHandlerReady={setCycleResolutionHandler}
+              illegalMoveWarning={illegalMoveWarning}
             />
           )}
         </div>

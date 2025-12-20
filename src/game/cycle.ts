@@ -49,6 +49,31 @@ function hasPath(
 }
 
 /**
+ * Check if adding an edge between squares a and b would create a trivial 2-line cycle.
+ * A 2-line cycle happens when there's already a direct move between these squares,
+ * or when the path between them has exactly 1 edge (making the cycle have 2 edges total).
+ */
+export function wouldCreateTwoLineCycle(
+  a: SquareId,
+  b: SquareId,
+  uncollapsedMoves: QuantumMove[]
+): boolean {
+  // Check if there's already a direct move between these squares
+  const hasDirectConnection = uncollapsedMoves.some(m => 
+    (m.a === a && m.b === b) || (m.a === b && m.b === a)
+  );
+  
+  if (hasDirectConnection) {
+    return true; // This would create a trivial 2-line cycle
+  }
+  
+  // Check if the path between them has exactly 1 edge
+  // If so, adding the new edge creates a 2-edge cycle
+  const path = findPath(a, b, uncollapsedMoves);
+  return path.length === 1;
+}
+
+/**
  * Get all squares involved in the cycle created by the last move.
  * Returns the cycle edges (moves) that form the cycle.
  */

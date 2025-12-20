@@ -15,6 +15,7 @@ interface BoardProps {
   hoveredCycleEndpoint: SquareId | null;
   onHoverCycleEndpoint: (endpoint: SquareId | null) => void;
   onCycleResolutionHandlerReady?: (handler: (endpoint: SquareId) => void) => void;
+  illegalMoveWarning?: { squares: [SquareId, SquareId] } | null;
 }
 
 export default function Board({ 
@@ -24,7 +25,8 @@ export default function Board({
   onCycleResolution,
   hoveredCycleEndpoint,
   onHoverCycleEndpoint,
-  onCycleResolutionHandlerReady
+  onCycleResolutionHandlerReady,
+  illegalMoveWarning
 }: BoardProps) {
   const squares: SquareId[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   const [isAnimating, setIsAnimating] = useState(false);
@@ -346,6 +348,8 @@ export default function Board({
               }
             };
 
+            const isIllegal = illegalMoveWarning?.squares.includes(square) || false;
+
             return (
               <Square
                 key={square}
@@ -356,6 +360,7 @@ export default function Board({
                 isHoveredEndpoint={isHoveredEndpoint}
                 hoveredMoveId={hoveredMoveId}
                 previewData={previewData}
+                isIllegal={isIllegal}
                 onClick={() => handleSquareClick(square)}
                 onMouseEnter={handleSquareMouseEnter}
                 onMouseLeave={handleSquareMouseLeave}
@@ -377,6 +382,14 @@ export default function Board({
         )}
       </div>
       
+      {illegalMoveWarning && (
+        <div className="illegal-move-warning">
+          <div className="warning-icon">⚠️</div>
+          <div className="warning-text">
+            Cannot create a 2-line cycle! Please choose different squares.
+          </div>
+        </div>
+      )}
     </>
   );
 }

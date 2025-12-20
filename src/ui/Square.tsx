@@ -14,6 +14,7 @@ interface SquareProps {
   isHoveredEndpoint?: boolean;
   hoveredMoveId?: string | null;
   previewData?: PreviewData | null;
+  isIllegal?: boolean;
   onClick: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -29,6 +30,7 @@ export default function Square({
   isHoveredEndpoint = false,
   hoveredMoveId = null,
   previewData = null,
+  isIllegal = false,
   onClick,
   onMouseEnter,
   onMouseLeave,
@@ -54,7 +56,7 @@ export default function Square({
 
   return (
     <div
-      className={`square ${isSelected ? 'selected' : ''} ${isAvailable ? 'available' : ''} ${classical ? 'classical' : ''} ${isCycleEndpoint ? 'cycle-endpoint' : ''} ${isHoveredEndpoint ? 'hovered-endpoint' : ''}`}
+      className={`square ${isSelected ? 'selected' : ''} ${isAvailable ? 'available' : ''} ${classical ? 'classical' : ''} ${isCycleEndpoint ? 'cycle-endpoint' : ''} ${isHoveredEndpoint ? 'hovered-endpoint' : ''} ${isIllegal ? 'illegal' : ''}`}
       onClick={isClickable ? onClick : undefined}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
