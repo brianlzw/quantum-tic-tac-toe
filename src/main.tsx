@@ -7,8 +7,10 @@ import { initGA, trackPageView } from './utils/analytics'
 // Initialize Google Analytics
 initGA()
 
-// Track initial page view
-trackPageView(window.location.pathname)
+// Track initial page view - wait a bit for script to load
+setTimeout(() => {
+  trackPageView(window.location.pathname);
+}, 1000);
 
 const rootElement = document.getElementById('root')
 if (!rootElement) {
@@ -20,4 +22,3 @@ ReactDOM.createRoot(rootElement).render(
     <App />
   </React.StrictMode>,
 )
-
