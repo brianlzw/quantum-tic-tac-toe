@@ -21,33 +21,62 @@ let gaInitialized = false;
  * This should be called once when the app loads
  */
 export const initGA = (): void => {
+  // Check if GA is already initialized from HTML snippet
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function' && typeof window.dataLayer !== 'undefined' && window.dataLayer.length > 0) {
+    console.log('[Analytics] Google Analytics already initialized from HTML snippet');
+    gaInitialized = true;
+    return;
+  }
+  
   // Only initialize if we have a measurement ID and haven't initialized yet
-  if (!GA_MEASUREMENT_ID || gaInitialized || typeof window === 'undefined') {
+  if (!GA_MEASUREMENT_ID) {
+    console.warn('[Analytics] No GA Measurement ID found. Set VITE_GA_MEASUREMENT_ID in your .env file.');
+    return;
+  }
+  
+  if (gaInitialized || typeof window === 'undefined') {
     return;
   }
 
-  // Initialize dataLayer
+  console.log('[Analytics] Initializing Google Analytics with ID:', GA_MEASUREMENT_ID);
+
+  // Initialize dataLayer (standard GA4 pattern - MUST be before gtag definition)
   window.dataLayer = window.dataLayer || [];
   
-  // Define gtag function
-  function gtag(...args: any[]) {
-    window.dataLayer.push(args);
+  // Define gtag function ONLY if it doesn't exist (standard GA4 pattern)
+  // This temporary function queues commands until the GA script loads and replaces it
+  if (typeof window.gtag === 'undefined') {
+    window.gtag = function(...args: any[]) {
+      window.dataLayer.push(args);
+    };
   }
-  window.gtag = gtag;
 
-  // Load GA script
+  // Configure GA BEFORE script loads (standard GA4 pattern)
+  window.gtag('js', new Date());
+  window.gtag('config', GA_MEASUREMENT_ID, {
+    page_path: window.location.pathname,
+  });
+
+  // Load GA script (standard GA4 pattern)
   const script = document.createElement('script');
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+  script.onerror = () => {
+    console.error('[Analytics] Failed to load Google Analytics script');
+  };
+  script.onload = () => {
+    console.log('[Analytics] Google Analytics script loaded successfully');
+  };
   document.head.appendChild(script);
 
-  // Configure GA
-  gtag('js', new Date());
-  gtag('config', GA_MEASUREMENT_ID, {
+  // Configure GA using gtag (standard GA4 pattern)
+  window.gtag('js', new Date());
+  window.gtag('config', GA_MEASUREMENT_ID, {
     page_path: window.location.pathname,
   });
 
   gaInitialized = true;
+  console.log('[Analytics] Google Analytics initialized');
 };
 
 /**
@@ -64,9 +93,16 @@ export const isGAAvailable = (): boolean => {
  * Track a page view
  */
 export const trackPageView = (path: string): void => {
-  if (!isGAAvailable()) return;
+  if (!isGAAvailable()) {
+    console.warn('[Analytics] Cannot track page view - GA not available');
+    return;
+  }
   
+  console.log('[Analytics] Tracking page view:', path);
   window.gtag('config', GA_MEASUREMENT_ID, {
+    page_path: path,
+  });
+  window.gtag('event', 'page_view', {
     page_path: path,
   });
 };
@@ -80,8 +116,12 @@ export const trackEvent = (
     [key: string]: string | number | boolean | undefined;
   }
 ): void => {
-  if (!isGAAvailable()) return;
+  if (!isGAAvailable()) {
+    console.warn('[Analytics] Cannot track event - GA not available:', eventName);
+    return;
+  }
   
+  console.log('[Analytics] Tracking event:', eventName, eventParams);
   window.gtag('event', eventName, eventParams);
 };
 
@@ -177,4 +217,3 @@ export const trackDifficultyChange = (difficulty: string): void => {
     difficulty,
   });
 };
-

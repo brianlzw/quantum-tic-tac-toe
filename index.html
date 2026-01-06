@@ -22,6 +22,15 @@
     <meta name="language" content="English" />
     <link rel="canonical" href="https://quantum-ttt.com/" />
     
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3SP407BFQP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-3SP407BFQP');
+    </script>
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://quantum-ttt.com/" />
@@ -77,6 +86,65 @@
     </script>
   </head>
   <body>
+    <!-- SEO-visible content for search engines -->
+    <noscript>
+      <div style="padding: 20px; max-width: 800px; margin: 0 auto; font-family: system-ui, sans-serif;">
+        <h1>Quantum Tic-Tac-Toe - Play Online Free</h1>
+        <p>Play Quantum Tic-Tac-Toe online for free! Experience the quantum mechanics twist on classic tic-tac-toe with entanglement, superposition, and cycle resolution. Play against a friend or challenge the AI bot.</p>
+        
+        <h2>How to Play Quantum Tic-Tac-Toe</h2>
+        <p>Quantum Tic-Tac-Toe is a strategic board game that introduces quantum mechanics concepts to the classic tic-tac-toe game.</p>
+        
+        <h3>Basic Rules</h3>
+        <ul>
+          <li>Each turn, place <strong>two marks</strong> (spooky marks) in different squares.</li>
+          <li>Marks are labeled with your emoji and the move number (e.g., 🐊₁, 🐘₂).</li>
+          <li>The two squares you mark become <strong>entangled</strong>.</li>
+        </ul>
+        
+        <h3>Cycles and Collapse</h3>
+        <ul>
+          <li>When a <strong>cycle</strong> is formed in the entanglement graph, a measurement occurs.</li>
+          <li>The <strong>other player</strong> (who didn't create the cycle) chooses how to collapse it.</li>
+          <li>They pick one of the two squares from the last move.</li>
+          <li>This choice forces all connected entanglements to collapse into classical marks.</li>
+          <li>Once a square has a classical mark, it's locked and can't receive more spooky marks.</li>
+        </ul>
+        
+        <h3>Winning</h3>
+        <ul>
+          <li>First player to get <strong>three classical marks in a row</strong> wins.</li>
+          <li>If both players get three-in-a-row after a collapse, the line with the <strong>lower maximum move number</strong> wins (1 point).</li>
+          <li>The other player gets ½ point.</li>
+        </ul>
+        
+        <h3>Quantum Concepts</h3>
+        <ul>
+          <li><strong>Superposition</strong>: the ability of quantum objects to be in two places at once.</li>
+          <li><strong>Entanglement</strong>: the phenomenon where distant parts of a quantum system display correlations that cannot be explained by either timelike causality or common cause.</li>
+          <li><strong>Collapse</strong>: the phenomenon where the quantum states of a system are reduced to classical states. Collapses occur when a measurement happens.</li>
+        </ul>
+        
+        <p><strong>Note:</strong> This game requires JavaScript to play. Please enable JavaScript in your browser.</p>
+      </div>
+    </noscript>
+    
+    <!-- Hidden but crawlable content for SEO -->
+    <div style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">
+      <h1>Quantum Tic-Tac-Toe</h1>
+      <p>Play Quantum Tic-Tac-Toe online for free. A quantum mechanics twist on classic tic-tac-toe featuring quantum entanglement, superposition, and cycle resolution mechanics. Play against a friend in two-player mode or challenge the AI bot. Learn quantum mechanics concepts through interactive gameplay.</p>
+      <h2>How to Play Quantum Tic-Tac-Toe</h2>
+      <p>Quantum Tic-Tac-Toe introduces quantum mechanics to the classic game. Each turn, players place two entangled marks. When cycles form, measurements occur and collapses happen. The first player to get three classical marks in a row wins.</p>
+      <h3>Game Features</h3>
+      <ul>
+        <li>Two-player mode: Play against a friend locally</li>
+        <li>AI Bot mode: Challenge an intelligent computer opponent</li>
+        <li>Quantum entanglement mechanics</li>
+        <li>Cycle resolution system</li>
+        <li>Strategic gameplay with quantum concepts</li>
+      </ul>
+    </div>
+    
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
